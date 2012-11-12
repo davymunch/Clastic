@@ -1,0 +1,35 @@
+{
+    "name": "clastic/clastic",
+    "description": "A full object-oriented CMF.",
+    "keywords": ["CMF"],
+    "homepage": "http://clastic.nousefreak.be",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dries De Peuter",
+            "email": "dries@nousefreak.be"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "doctrine/orm": "2.4.*",
+        "monolog/monolog": ">=1.0.0,<1.2-dev",
+        "symfony/config": ">=2.1,<2.3-dev",
+        "symfony/event-dispatcher": ">=2.1,<2.3-dev",
+        "symfony/finder": ">=2.1,<2.3-dev",
+        "symfony/http-foundation": ">=2.1,<2.3-dev",
+        "symfony/http-kernel": ">=2.1,<2.3-dev",
+        "symfony/routing": ">=2.1,<2.3-dev",
+        "symfony/yaml": ">=2.1,<2.3-dev",
+        "twig/twig": ">=1.8.0,<2.0-dev"
+    },
+    "autoload": {
+        "psr-0": {
+          "Clastic": "src/",
+          "Core": "",
+          "Contrib": "",
+          "Sites": ""
+        }
+    },
+    "minimum-stability": "dev"
+}

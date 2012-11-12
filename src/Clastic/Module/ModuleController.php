@@ -1,0 +1,82 @@
+<?php
+/*
+ * This file is part of the Clastic package.
+ *
+ * (c) Dries De Peuter <dries@nousefreak.be>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Clastic\Module;
+
+use Clastic\Clastic;
+use Clastic\Controller;
+use ReflectionClass;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\HttpFoundation\Response;
+
+abstract class ModuleController extends Controller
+{
+
+	private $templateEngine;
+
+	public function handle()
+	{
+		$response = new Response($this->render('@Homepage/test.html', array(
+      'rand' => rand(),
+    )));
+		$response->setTtl(10);
+		$response->prepare($this->getRequest());
+		return $response;
+	}
+
+	public function getRoutes()
+	{
+		return new RouteCollection();
+	}
+
+	/**
+	 * @return \Twig_Environment
+	 */
+	protected function &getTemplateEngine()
+	{
+		if (is_null($this->templateEngine)) {
+			$this->templateEngine = Clastic::getTemplateEngine();
+			foreach ($this->getModulePaths() as $path) {
+				if (is_dir($path . '/templates')) {
+					$this->templateEngine->getLoader()->addPath($path . '/templates', $this->getControllerName());
+				}
+			}
+		}
+		return $this->templateEngine;
+	}
+
+	/**
+   * Renders a template.
+   *
+   * @param string $name    The template name
+   * @param array  $context An array of parameters to pass to the template
+   *
+	 * @api
+	 *
+   * @return string The rendered template
+   */
+  protected function render($name, array $context = array())
+  {
+		return $this->getTemplateEngine()->render($name, $context);
+	}
+
+
+	protected function getModulePaths()
+	{
+		$paths = array();
+		$class = new ReflectionClass($this);
+		$paths[] = dirname($class->getFileName());
+		while ($class = $class->getParentClass()) {
+			$paths[] = dirname($class->getFileName());
+		}
+		return $paths;
+	}
+
+}
