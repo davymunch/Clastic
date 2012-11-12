@@ -97,13 +97,6 @@ class Clastic extends HttpKernel\HttpKernel
 	protected static $theme = 'Default';
 
 	/**
-	 * Active admin theme
-	 *
-	 * @var string
-	 */
-	protected static $adminTheme = 'Backoffice';
-
-	/**
   * Constructor
   *
   * @param EventDispatcherInterface    $dispatcher An EventDispatcherInterface instance
@@ -237,11 +230,21 @@ class Clastic extends HttpKernel\HttpKernel
 	public static function &getTemplateEngine()
 	{
 		if (is_null(self::$templateEngine)) {
-			$loader = new Twig_Loader_Filesystem(array());
+			$paths = array_filter(array(
+        CLASTIC_ROOT . '/Core/templates',
+        CLASTIC_ROOT . '/Core/Themes/' . static::getTheme() . '/templates',
+        CLASTIC_ROOT . '/Contrib/templates',
+        CLASTIC_ROOT . '/Contrib/Themes/' . static::getTheme() . '/templates',
+        CLASTIC_ROOT . '/Sites/' . Clastic::getSiteDirectory(). '/templates',
+        CLASTIC_ROOT . '/Sites/' . Clastic::getSiteDirectory(). '/Themes/' . static::getTheme() . '/templates',
+      ), function($path) {
+				return is_dir($path);
+			});
+			$loader = new Twig_Loader_Filesystem($paths);
 			self::$templateEngine = new Twig_Environment($loader, array(
-				'cache' => CLASTIC_ROOT . '/cache/templates',
+				'cache' => static::$debug ? false : CLASTIC_ROOT . '/cache/templates',
 			), array(
-				'debug' => false,
+				'debug' => static::$debug,
 	    ));
 		}
 		return self::$templateEngine;

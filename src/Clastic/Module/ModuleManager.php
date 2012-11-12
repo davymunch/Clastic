@@ -70,8 +70,7 @@ class ModuleManager
 	public static function collectDatabaseMetadata($path)
 	{
 		if (is_dir($path) || mkdir($path, 0777, true)) {
-
-				// @todo collect module tables.
+			// @todo collect module tables.
 		}
 	}
 

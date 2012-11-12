@@ -23,7 +23,7 @@ abstract class ModuleController extends Controller
 
 	public function handle()
 	{
-		$response = new Response($this->render('@Homepage/test.html', array(
+		$response = new Response($this->render('page.html.twig', array(
       'rand' => rand(),
     )));
 		$response->setTtl(10);
@@ -52,18 +52,6 @@ abstract class ModuleController extends Controller
 					'/Core/Themes/' . Clastic::getTheme() . '/',
 					'/Contrib/Themes/' . Clastic::getTheme() . '/',
 					'/Sites/' . Clastic::getSiteDirectory() . '/Themes/' . Clastic::getTheme() . '/',
-				), $path);
-				if (is_dir($themePath . '/templates')) {
-					$this->templateEngine->getLoader()->addPath($themePath . '/templates', $this->getControllerName());
-				}
-				$themePath = str_replace(array(
-					'/Core/',
-				  '/Contrib/',
-				  '/Sites/' . Clastic::getSiteDirectory() . '/',
-				), array(
-					'/Core/Themes/' . Clastic::getAdminTheme() . '/',
-					'/Contrib/Themes/' . Clastic::getAdminTheme() . '/',
-					'/Sites/' . Clastic::getSiteDirectory() . '/Themes/' . Clastic::getAdminTheme() . '/',
 				), $path);
 				if (is_dir($themePath . '/templates')) {
 					$this->templateEngine->getLoader()->addPath($themePath . '/templates', $this->getControllerName());
