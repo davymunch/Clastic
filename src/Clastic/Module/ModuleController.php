@@ -23,7 +23,7 @@ abstract class ModuleController extends Controller
 
 	public function handle()
 	{
-		$response = new Response($this->render('@Homepage/test.html', array(
+		$response = new Response($this->render('page.html.twig', array(
       'rand' => rand(),
     )));
 		$response->setTtl(10);
