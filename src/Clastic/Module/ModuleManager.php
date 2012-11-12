@@ -36,19 +36,12 @@ class ModuleManager
 				->depth(0)
 				->in(static::getModulePaths());
 			$tmpRoutes = array();
-			$tmpAdminRoutes = array();
 			foreach ($iterator as $module) {
 				$tmpRoutes[$module->getRelativePathname()]['path'] = $module->getRealPath();
 				if (file_exists($module->getRealPath() . '/conf/routes.yml')) {
 					$configRoutes = Yaml::parse($module->getRealPath() . '/conf/routes.yml');
 					foreach ((array)$configRoutes as $name => $route) {
 						$tmpRoutes[$module->getRelativePathname()]['routes'][$name] = $route;
-					}
-				}
-				if (file_exists($module->getRealPath() . '/conf/routes_admin.yml')) {
-					$configRoutes = Yaml::parse($module->getRealPath() . '/conf/routes_admin.yml');
-					foreach ((array)$configRoutes as $name => $route) {
-						$tmpRoutes[$module->getRelativePathname()]['routes_admin'][$name] = $route;
 					}
 				}
 			}
@@ -63,18 +56,7 @@ class ModuleManager
 						unset($params['_pattern'], $params['_method']);
 						$routeCollection->add($name, new Route($route['_pattern'], $params));
 					}
-					static::$routes->addCollection($routeCollection, $name);
-				}
-				$adminRouteCollection = new RouteCollection();
-				if (isset($routes['routes_admin'])) {
-					foreach ($routes['routes_admin'] as $name => $route) {
-						$params = $route;
-						$controller = str_replace(array(CLASTIC_ROOT, '/'), array('', '\\'), $routes['path']) . '\\' . $module . 'Controller';
-						$params['_controller'] = $controller . '::' . $route['_method'];
-						unset($params['_pattern'], $params['_method']);
-						$adminRouteCollection->add($name, new Route($route['_pattern'], $params));
-					}
-					static::$routes->addCollection($adminRouteCollection, 'admin/' . $name);
+					static::$routes->addCollection($routeCollection);
 				}
 			}
 			$routesCache->write(serialize(static::$routes));
