@@ -56,18 +56,6 @@ abstract class ModuleController extends Controller
 				if (is_dir($themePath . '/templates')) {
 					$this->templateEngine->getLoader()->addPath($themePath . '/templates', $this->getControllerName());
 				}
-				$themePath = str_replace(array(
-					'/Core/',
-				  '/Contrib/',
-				  '/Sites/' . Clastic::getSiteDirectory() . '/',
-				), array(
-					'/Core/Themes/' . Clastic::getAdminTheme() . '/',
-					'/Contrib/Themes/' . Clastic::getAdminTheme() . '/',
-					'/Sites/' . Clastic::getSiteDirectory() . '/Themes/' . Clastic::getAdminTheme() . '/',
-				), $path);
-				if (is_dir($themePath . '/templates')) {
-					$this->templateEngine->getLoader()->addPath($themePath . '/templates', $this->getControllerName());
-				}
 				if (is_dir($path . '/templates')) {
 					$this->templateEngine->getLoader()->addPath($path . '/templates', $this->getControllerName());
 				}

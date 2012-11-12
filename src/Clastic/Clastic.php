@@ -97,13 +97,6 @@ class Clastic extends HttpKernel\HttpKernel
 	protected static $theme = 'Default';
 
 	/**
-	 * Active admin theme
-	 *
-	 * @var string
-	 */
-	protected static $adminTheme = 'Backoffice';
-
-	/**
   * Constructor
   *
   * @param EventDispatcherInterface    $dispatcher An EventDispatcherInterface instance
