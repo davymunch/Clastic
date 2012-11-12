@@ -8,14 +8,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Core\Modules\Homepage;
+namespace Core\Modules\Dashboard;
 
 use Clastic\Module\ModuleController;
+use Symfony\Component\HttpFoundation\Response;
 
-class HomepageController extends ModuleController
+class DashboardController extends ModuleController
 {
 
-	protected $controllerName = 'Homepage';
+	protected $controllerName = 'Dashboard';
 
+	public function dashboard()
+	{
+		return new Response('dashboard');
+	}
 
 }

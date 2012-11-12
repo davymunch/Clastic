@@ -67,7 +67,11 @@ abstract class ModuleController extends Controller
 		return $this->getTemplateEngine()->render($name, $context);
 	}
 
-
+	/**
+	 * Get all module paths, excluding abstracts and interfaces.
+	 *
+	 * @return array
+	 */
 	protected function getModulePaths()
 	{
 		$paths = array();
@@ -76,6 +80,9 @@ abstract class ModuleController extends Controller
 		while ($class = $class->getParentClass()) {
 			$paths[] = dirname($class->getFileName());
 		}
+		$paths = array_filter($paths, function($path) {
+			return strpos($path, '/src/') === false;
+		});
 		return $paths;
 	}
 
