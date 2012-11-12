@@ -90,6 +90,20 @@ class Clastic extends HttpKernel\HttpKernel
 	protected static $templateEngine;
 
 	/**
+	 * Active front-end theme
+	 *
+	 * @var string
+	 */
+	protected static $theme = 'Default';
+
+	/**
+	 * Active admin theme
+	 *
+	 * @var string
+	 */
+	protected static $adminTheme = 'Backoffice';
+
+	/**
   * Constructor
   *
   * @param EventDispatcherInterface    $dispatcher An EventDispatcherInterface instance
@@ -241,6 +255,16 @@ class Clastic extends HttpKernel\HttpKernel
 	public static function getSiteDirectory()
 	{
 		return static::$siteDirectory;
+	}
+
+	public static function getTheme()
+	{
+		return static::$theme;
+	}
+
+	public static function getAdminTheme()
+	{
+		return static::$adminTheme;
 	}
 
 }

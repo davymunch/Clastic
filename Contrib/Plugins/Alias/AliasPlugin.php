@@ -26,8 +26,9 @@ class AliasPlugin extends PluginController
 	{
 		$request = &$event->getRequest();
 
-		if ($request->getPathInfo() == '/') {
-			$route = '/homepage';
+		// @todo get these from the database.
+		if ($request->getPathInfo() == '/homepage') {
+			$route = '/';
 		}
 
 		if (isset($route)) {
