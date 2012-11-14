@@ -40,6 +40,8 @@ class Clastic extends HttpKernel\HttpKernel
 	 */
 	const EVENT_PRE_HANDLE = 'clastic.pre_handle';
 
+	const EVENT_PRE_RENDER = 'clastic.pre_render';
+
 	protected static $config = array();
 
 	/**
@@ -94,7 +96,7 @@ class Clastic extends HttpKernel\HttpKernel
 	 *
 	 * @var string
 	 */
-	protected static $theme = 'Default';
+	protected static $theme = 'Backoffice';
 
 	/**
   * Constructor
