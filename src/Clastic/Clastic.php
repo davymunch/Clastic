@@ -11,6 +11,9 @@
 namespace Clastic;
 
 use Clastic\Module\ModuleManager;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Monolog\Handler\StreamHandler;
 use \Clastic\Bridge\Logger;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -119,6 +122,8 @@ class Clastic extends HttpKernel\HttpKernel
 		$dispatcher = new EventDispatcher();
 		$dispatcher->addSubscriber(new HttpKernel\EventListener\RouterListener($matcher, null, static::$logger));
 		$dispatcher->addSubscriber(new HttpKernel\EventListener\ResponseListener('UTF-8'));
+
+		$dispatcher->addListener(KernelEvents::EXCEPTION, array($this, 'handleError'));
 
 		PluginManager::triggerPlugins($dispatcher);
 
@@ -267,9 +272,9 @@ class Clastic extends HttpKernel\HttpKernel
 		return static::$theme;
 	}
 
-	public static function getAdminTheme()
+	public function handleError(GetResponseForExceptionEvent $event)
 	{
-		return static::$adminTheme;
+		$event->setResponse(new Response($event->getException()->getMessage(), $event->getException()->getStatusCode()));
 	}
 
 }
