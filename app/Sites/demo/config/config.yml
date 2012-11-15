@@ -1,0 +1,6 @@
+database:
+  driver: 'mysqli'
+  host: 'localhost'
+  user: 'root'
+  password: 'root'
+  dbname: 'clastic_dev'

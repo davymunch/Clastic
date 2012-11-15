@@ -11,29 +11,35 @@
 namespace Clastic\Module;
 
 use Clastic\Clastic;
+use Clastic\Event\BlockCollectionEvent;
+use Clastic\Block\BlockCollection;
+use Clastic\Block\Block;
 use Clastic\Controller;
 use ReflectionClass;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Abstract version of the ModuleController.
+ */
 abstract class ModuleController extends Controller
 {
 
+	/**
+	 * Holds a reference the template engine.
+	 *
+	 * @var \Twig_Environment
+	 */
 	private $templateEngine;
 
+	/**
+	 * Basic handler.
+	 *
+	 * @throws Exception
+	 */
 	public function handle()
 	{
-		$response = new Response($this->render('page.html.twig', array(
-      'rand' => rand(),
-    )));
-		$response->setTtl(10);
-		$response->prepare($this->getRequest());
-		return $response;
-	}
-
-	public function getRoutes()
-	{
-		return new RouteCollection();
+		throw new Exception('No implementation of handle found.');
 	}
 
 	/**
@@ -74,9 +80,17 @@ abstract class ModuleController extends Controller
 	 *
    * @return string The rendered template
    */
-  protected function render($name, array $context = array())
+  protected function render($name, array $context = array(), $baseTemplate = 'page.html.twig')
   {
-		return $this->getTemplateEngine()->render($name, $context);
+	  if (is_null($baseTemplate)) {
+      return $this->getTemplateEngine()->render($name, $context);
+    }
+	  $collection = new BlockCollection();
+	  $contentBlock = new Block('_main_');
+	  $contentBlock->setContent($this->getTemplateEngine()->render($name, $context));
+		$collection->addBlock($contentBlock);
+	  $this->getDispatcher()->dispatch(Clastic::EVENT_PRE_RENDER, new BlockCollectionEvent($collection));
+	  return $this->getTemplateEngine()->render($baseTemplate, $collection->renderBlocks());
 	}
 
 	/**

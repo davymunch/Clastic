@@ -17,10 +17,24 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * This manager handles everything that involves more than one moduleController.
+ */
 class ModuleManager
 {
+	/**
+	 * Holds the routeCollection for all modules.
+	 *
+	 * @var \Symfony\Component\Routing\RouteCollection
+	 */
 	protected static $routes;
 
+	/**
+	 * Get the routeCollection from the cache.
+	 * If the cache is non existing, it will try all modules.
+	 *
+	 * @return \Symfony\Component\Routing\RouteCollection
+	 */
 	public static function createModuleRoutes()
 	{
 		if (!is_null(static::$routes)) {
@@ -51,7 +65,7 @@ class ModuleManager
 				if (isset($routes['routes'])) {
 					foreach ($routes['routes'] as $name => $route) {
 						$params = $route;
-						$controller = str_replace(array(CLASTIC_ROOT, '/'), array('', '\\'), $routes['path']) . '\\' . $module . 'Controller';
+						$controller = str_replace(array(CLASTIC_ROOT . '/app', '/'), array('', '\\'), $routes['path']) . '\\' . $module . 'Controller';
 						$params['_controller'] = $controller . '::' . $route['_method'];
 						unset($params['_pattern'], $params['_method']);
 						$routeCollection->add($name, new Route($route['_pattern'], $params));
@@ -67,6 +81,12 @@ class ModuleManager
 		return static::$routes;
 	}
 
+	/**
+	 * Collect all database metadata from all modules and store them in one folder.
+	 *
+	 * @todo implement this
+	 * @param $path string
+	 */
 	public static function collectDatabaseMetadata($path)
 	{
 		if (is_dir($path) || mkdir($path, 0777, true)) {
@@ -74,12 +94,17 @@ class ModuleManager
 		}
 	}
 
+	/**
+	 * Get all directories where modules are stored.
+	 *
+	 * @return string[]
+	 */
 	public static function getModulePaths()
 	{
 		return array_filter(array(
-			CLASTIC_ROOT . '/Core/Modules',
-			CLASTIC_ROOT . '/Contrib/Modules',
-			CLASTIC_ROOT . '/Sites/' . Clastic::getSiteDirectory(). '/Modules',
+			CLASTIC_ROOT . '/app/Core/Modules',
+			CLASTIC_ROOT . '/app/Contrib/Modules',
+			CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory(). '/Modules',
 		), function($directory) {
 			return is_dir($directory);
 		});

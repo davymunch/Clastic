@@ -18,9 +18,9 @@ class PluginManager
 	public static function triggerPlugins(EventDispatcher $dispatcher)
 	{
 		$pluginDirectories = array_filter(array(
-			CLASTIC_ROOT . '/Core/Plugins',
-			CLASTIC_ROOT . '/Contrib/Plugins',
-			CLASTIC_ROOT . '/Sites/Plugins',
+			CLASTIC_ROOT . '/app/Core/Plugins',
+			CLASTIC_ROOT . '/app/Contrib/Plugins',
+			CLASTIC_ROOT . '/app/Sites/Plugins',
 		), function($directory) {
 			return is_dir($directory);
 		});
@@ -41,7 +41,7 @@ class PluginManager
 		foreach ($plugins as $plugin) {
 			require_once($plugin);
 
-			$plugin = str_replace(array(CLASTIC_ROOT, '.php'), '', $plugin);
+			$plugin = str_replace(array(CLASTIC_ROOT . '/app', '.php'), '', $plugin);
 			$plugin = str_replace('/', '\\', $plugin);
 			new $plugin($dispatcher);
 		}

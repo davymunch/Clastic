@@ -26,9 +26,9 @@
     "autoload": {
         "psr-0": {
           "Clastic": "src/",
-          "Core": "",
-          "Contrib": "",
-          "Sites": ""
+          "Core": "app/",
+          "Contrib": "app/",
+          "Sites": "app/"
         }
     },
     "minimum-stability": "dev"
