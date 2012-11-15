@@ -17,10 +17,24 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * This manager handles everything that involves more than one moduleController.
+ */
 class ModuleManager
 {
+	/**
+	 * Holds the routeCollection for all modules.
+	 *
+	 * @var \Symfony\Component\Routing\RouteCollection
+	 */
 	protected static $routes;
 
+	/**
+	 * Get the routeCollection from the cache.
+	 * If the cache is non existing, it will try all modules.
+	 *
+	 * @return \Symfony\Component\Routing\RouteCollection
+	 */
 	public static function createModuleRoutes()
 	{
 		if (!is_null(static::$routes)) {
@@ -67,6 +81,12 @@ class ModuleManager
 		return static::$routes;
 	}
 
+	/**
+	 * Collect all database metadata from all modules and store them in one folder.
+	 *
+	 * @todo implement this
+	 * @param $path string
+	 */
 	public static function collectDatabaseMetadata($path)
 	{
 		if (is_dir($path) || mkdir($path, 0777, true)) {
@@ -74,6 +94,11 @@ class ModuleManager
 		}
 	}
 
+	/**
+	 * Get all directories where modules are stored.
+	 *
+	 * @return string[]
+	 */
 	public static function getModulePaths()
 	{
 		return array_filter(array(

@@ -16,6 +16,9 @@ use Clastic\Clastic;
 use Clastic\Event\BlockCollectionEvent;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Controller that handles the homepage.
+ */
 class HomepageController extends ModuleController
 {
 

@@ -14,17 +14,37 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\EventDispatcher\Event;
 
+/**
+ * Request event.
+ *
+ * This is used to alter requests during the request flow.
+ */
 class RequestEvent extends Event
 {
-    private $request;
+	/**
+	 * The request to alter.
+	 *
+	 * @var \Symfony\Component\HttpFoundation\Request
+	 */
+	private $request;
 
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
-    }
+	/**
+	 * Constructor of the object.
+	 *
+	 * @param \Symfony\Component\HttpFoundation\Request $request
+	 */
+	public function __construct(Request $request)
+	{
+		$this->request = $request;
+	}
 
-    public function &getRequest()
-    {
-        return $this->request;
-    }
+	/**
+	 * Get the request.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Request
+	 */
+	public function &getRequest()
+	{
+		return $this->request;
+	}
 }

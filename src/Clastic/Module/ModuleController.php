@@ -19,19 +19,27 @@ use ReflectionClass;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Abstract version of the ModuleController.
+ */
 abstract class ModuleController extends Controller
 {
 
+	/**
+	 * Holds a reference the template engine.
+	 *
+	 * @var \Twig_Environment
+	 */
 	private $templateEngine;
 
+	/**
+	 * Basic handler.
+	 *
+	 * @throws Exception
+	 */
 	public function handle()
 	{
 		throw new Exception('No implementation of handle found.');
-	}
-
-	public function getRoutes()
-	{
-		return new RouteCollection();
 	}
 
 	/**

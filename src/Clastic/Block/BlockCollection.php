@@ -10,10 +10,14 @@
 
 namespace Clastic\Block;
 
+/**
+ * The blockCollection that stores all blocks.
+ */
 class BlockCollection
 {
-
 	/**
+	 * Holds a list of all the blocks.
+	 *
 	 * @var Block[]
 	 */
 	protected $blocks = array();
@@ -47,6 +51,11 @@ class BlockCollection
 		return $renderedBlocks;
 	}
 
+	/**
+	 * Sort all the blocks per region.
+	 *
+	 * @param $blocks
+	 */
 	protected function sortBlocks(&$blocks) {
 		foreach ($blocks as &$region)
 		{
