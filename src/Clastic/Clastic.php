@@ -43,8 +43,16 @@ class Clastic extends HttpKernel\HttpKernel
 	 */
 	const EVENT_PRE_HANDLE = 'clastic.pre_handle';
 
+	/**
+	 * Event name. Dispatched before rendering the base template.
+	 */
 	const EVENT_PRE_RENDER = 'clastic.pre_render';
 
+	/**
+	 * Holds the config of the current site.
+	 *
+	 * @var array
+	 */
 	protected static $config = array();
 
 	/**
@@ -55,60 +63,78 @@ class Clastic extends HttpKernel\HttpKernel
 	public static $debug = true;
 
 	/**
+	 * Hold doctrine's entityManager.
+	 *
 	 * @var \Doctrine\ORM\EntityManager
 	 */
 	protected static $entityManager;
 
 	/**
+	 * Holds the eventDispatcher.
+	 *
 	 * @var \Symfony\Component\EventDispatcher\EventDispatcher
 	 */
 	protected static $eventDispatcher;
 
 	/**
+	 * Holds the logger instance. This implements \Monolog\Logger
+	 *
 	 * @var \Clastic\Bridge\Logger
 	 */
 	protected static $logger;
 
 	/**
+	 * Holds the pdo connection.
+	 *
+	 * @todo is this needed?
+	 *
 	 * @var \PDO
 	 */
 	protected static $pdo;
 
 	/**
+	 * Holds the current request.
+	 *
 	 * @var \Symfony\Component\HttpFoundation\Request
 	 */
 	protected static $request;
 
 	/**
-	 * @var string Directory of the active site.
+	 * Directory of the active site.
+	 *
+	 * @var string
 	 */
 	protected static $siteDirectory;
 
 	/**
-	 * @var int ID of the active site.
+	 * ID of the active site.
+	 *
+	 * @var int
 	 */
 	protected static $siteId;
 
 	/**
+	 * Hold the template engine.
+	 *
 	 * @var \Twig_Environment
 	 */
 	protected static $templateEngine;
 
 	/**
-	 * Active front-end theme
+	 * Active theme.
 	 *
 	 * @var string
 	 */
 	protected static $theme = 'Backoffice';
 
-	/**
-  * Constructor
-  *
-  * @param EventDispatcherInterface    $dispatcher An EventDispatcherInterface instance
-  * @param ControllerResolverInterface $resolver   A ControllerResolverInterface instance
-  *
-  * @api
-  */
+  /**
+   * Constructor
+   *
+   * @param EventDispatcherInterface    $dispatcher An EventDispatcherInterface instance
+   * @param ControllerResolverInterface $resolver   A ControllerResolverInterface instance
+   *
+   * @api
+   */
 	public function __construct(Request &$request)
 	{
 		$this->resolveSite($request);
@@ -170,6 +196,13 @@ class Clastic extends HttpKernel\HttpKernel
 		static::$siteDirectory = 'demo';
 	}
 
+	/**
+	 * Load the config from file if a cache exists.
+	 * If no cache exists, the call will first be loaded from files and append this
+	 * with the databases config.
+	 *
+	 * @void
+	 */
 	protected function loadConfigAndDatabase()
 	{
 		$cachePath = CLASTIC_ROOT . '/cache/config-' . self::getSiteId() . '.php';
@@ -177,6 +210,7 @@ class Clastic extends HttpKernel\HttpKernel
 		if (!$configCache->isFresh()) {
 			self::$config = array_merge(self::$config, Yaml::parse(CLASTIC_ROOT . '/Sites/' . self::$siteDirectory . '/config/config.yml'));
 			$this->loadDatabase();
+			//@todo append the database config.
 			$configCache->write(Yaml::dump(self::$config));
 		}
 		else {
@@ -185,6 +219,11 @@ class Clastic extends HttpKernel\HttpKernel
 		}
 	}
 
+	/**
+	 * Initialize the database.
+	 *
+	 * @void
+	 */
 	protected function loadDatabase()
 	{
 		$path = CLASTIC_ROOT . '/cache/doctrine/yaml';
@@ -200,6 +239,11 @@ class Clastic extends HttpKernel\HttpKernel
 		), Setup::createYAMLMetadataConfiguration(array($path), self::$debug));
 	}
 
+	/**
+	 * Instantiate the logger.
+	 *
+	 * @void
+	 */
 	protected function loadLogger()
 	{
 		static::$logger = new Logger('watchdog');
@@ -209,6 +253,8 @@ class Clastic extends HttpKernel\HttpKernel
 
 	/**
 	 * Link all bindings to the these can be exposed.
+	 *
+	 * @void
 	 */
 	private function setBindings()
 	{
@@ -216,6 +262,8 @@ class Clastic extends HttpKernel\HttpKernel
 	}
 
 	/**
+	 * Gets a reference to the eventDispatcher.
+	 *
 	 * @return \Symfony\Component\EventDispatcher\EventDispatcher
 	 */
 	public static function &getDispatcher()
@@ -224,6 +272,8 @@ class Clastic extends HttpKernel\HttpKernel
 	}
 
 	/**
+	 * Gets a reference to the request.
+	 *
 	 * @return \Symfony\Component\HttpFoundation\Request
 	 */
 	public static function &getRequest()
@@ -232,6 +282,8 @@ class Clastic extends HttpKernel\HttpKernel
 	}
 
 	/**
+	 * Gets a reference to the template engine.
+	 *
 	 * @return \Twig_Environment
 	 */
 	public static function &getTemplateEngine()
@@ -257,21 +309,41 @@ class Clastic extends HttpKernel\HttpKernel
 		return self::$templateEngine;
 	}
 
+	/**
+	 * Getter for the site's ID.
+	 *
+	 * @return int
+	 */
 	public static function getSiteId()
 	{
 		return static::$siteId;
 	}
 
+	/**
+	 * Getter for the site's directory.
+	 *
+	 * @return string
+	 */
 	public static function getSiteDirectory()
 	{
 		return static::$siteDirectory;
 	}
 
+	/**
+	 * Getter for the site's theme.
+	 *
+	 * @return string
+	 */
 	public static function getTheme()
 	{
 		return static::$theme;
 	}
 
+	/**
+	 * Handles the request if something went wrong.
+	 *
+	 * @param \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent $event
+	 */
 	public function handleError(GetResponseForExceptionEvent $event)
 	{
 		$event->setResponse(new Response($event->getException()->getMessage(), $event->getException()->getStatusCode()));

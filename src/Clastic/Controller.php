@@ -9,23 +9,45 @@
  */
 
 namespace Clastic;
+
 /**
  * The base of all controllers.
  */
 class Controller
 {
+	/**
+	 * Name of the controller.
+	 *
+	 * @var string
+	 */
 	protected $controllerName;
 
+	/**
+	 * Holds a reference to the eventDispatcher.
+	 *
+	 * @var \Symfony\Component\EventDispatcher\EventDispatcher
+	 */
 	private $dispatcher;
+
+	/**
+	 * Holds a reference to the request.
+	 * @var \Symfony\Component\HttpFoundation\Request
+	 */
 	private $request;
 
-
+	/**
+	 * Getter for the controller's name.
+	 *
+	 * @return string
+	 */
 	public function getControllerName()
 	{
 		return $this->controllerName;
 	}
 
 	/**
+	 * Returns a reference to the eventDispatcher.
+	 *
 	 * @api
 	 *
 	 * @return \Symfony\Component\EventDispatcher\EventDispatcher
@@ -39,6 +61,8 @@ class Controller
 	}
 
 	/**
+	 * Gets a reference to the request.
+	 *
 	 * @api
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Request
