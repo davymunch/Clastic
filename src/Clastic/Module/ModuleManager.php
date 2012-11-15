@@ -65,7 +65,7 @@ class ModuleManager
 				if (isset($routes['routes'])) {
 					foreach ($routes['routes'] as $name => $route) {
 						$params = $route;
-						$controller = str_replace(array(CLASTIC_ROOT, '/'), array('', '\\'), $routes['path']) . '\\' . $module . 'Controller';
+						$controller = str_replace(array(CLASTIC_ROOT . '/app', '/'), array('', '\\'), $routes['path']) . '\\' . $module . 'Controller';
 						$params['_controller'] = $controller . '::' . $route['_method'];
 						unset($params['_pattern'], $params['_method']);
 						$routeCollection->add($name, new Route($route['_pattern'], $params));
@@ -102,9 +102,9 @@ class ModuleManager
 	public static function getModulePaths()
 	{
 		return array_filter(array(
-			CLASTIC_ROOT . '/Core/Modules',
-			CLASTIC_ROOT . '/Contrib/Modules',
-			CLASTIC_ROOT . '/Sites/' . Clastic::getSiteDirectory(). '/Modules',
+			CLASTIC_ROOT . '/app/Core/Modules',
+			CLASTIC_ROOT . '/app/Contrib/Modules',
+			CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory(). '/Modules',
 		), function($directory) {
 			return is_dir($directory);
 		});

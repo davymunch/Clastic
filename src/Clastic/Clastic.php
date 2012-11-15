@@ -208,7 +208,7 @@ class Clastic extends HttpKernel\HttpKernel
 		$cachePath = CLASTIC_ROOT . '/cache/config-' . self::getSiteId() . '.php';
 		$configCache = new ConfigCache($cachePath, self::$debug);
 		if (!$configCache->isFresh()) {
-			self::$config = array_merge(self::$config, Yaml::parse(CLASTIC_ROOT . '/Sites/' . self::$siteDirectory . '/config/config.yml'));
+			self::$config = array_merge(self::$config, Yaml::parse(CLASTIC_ROOT . '/app/Sites/' . self::$siteDirectory . '/config/config.yml'));
 			$this->loadDatabase();
 			//@todo append the database config.
 			$configCache->write(Yaml::dump(self::$config));
@@ -290,12 +290,12 @@ class Clastic extends HttpKernel\HttpKernel
 	{
 		if (is_null(self::$templateEngine)) {
 			$paths = array_filter(array(
-        CLASTIC_ROOT . '/Core/templates',
-        CLASTIC_ROOT . '/Core/Themes/' . static::getTheme() . '/templates',
-        CLASTIC_ROOT . '/Contrib/templates',
-        CLASTIC_ROOT . '/Contrib/Themes/' . static::getTheme() . '/templates',
-        CLASTIC_ROOT . '/Sites/' . Clastic::getSiteDirectory(). '/templates',
-        CLASTIC_ROOT . '/Sites/' . Clastic::getSiteDirectory(). '/Themes/' . static::getTheme() . '/templates',
+        CLASTIC_ROOT . '/app/Core/templates',
+        CLASTIC_ROOT . '/app/Core/Themes/' . static::getTheme() . '/templates',
+        CLASTIC_ROOT . '/app/Contrib/templates',
+        CLASTIC_ROOT . '/app/Contrib/Themes/' . static::getTheme() . '/templates',
+        CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory(). '/templates',
+        CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory(). '/Themes/' . static::getTheme() . '/templates',
       ), function($path) {
 				return is_dir($path);
 			});
