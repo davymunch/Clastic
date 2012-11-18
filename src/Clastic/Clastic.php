@@ -346,7 +346,11 @@ class Clastic extends HttpKernel\HttpKernel
 	 */
 	public function handleError(GetResponseForExceptionEvent $event)
 	{
-		$event->setResponse(new Response($event->getException()->getMessage(), $event->getException()->getCode()));
+		switch (get_class($event->getException())) {
+			case 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException':
+				return $event->setResponse(new Response($event->getException()->getMessage(), $event->getException()->getStatusCode()));
+		}
+		var_dump($event->getException());
 	}
 
 }
