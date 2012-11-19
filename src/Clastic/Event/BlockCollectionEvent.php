@@ -19,30 +19,30 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class BlockCollectionEvent extends Event
 {
-	/**
-	 * Holds the blockCollection.
-	 *
-	 * @var \Clastic\Block\BlockCollection
-	 */
-	private $collection;
+    /**
+     * Holds the blockCollection.
+     *
+     * @var \Clastic\Block\BlockCollection
+     */
+    private $collection;
 
-	/**
-	 * Constructor for the event.
-	 *
-	 * @param \Clastic\Block\BlockCollection $collection
-	 */
-	public function __construct(BlockCollection $collection)
-	{
-		$this->collection = $collection;
-	}
+    /**
+     * Constructor for the event.
+     *
+     * @param \Clastic\Block\BlockCollection $collection
+     */
+    public function __construct(BlockCollection $collection)
+    {
+        $this->collection = $collection;
+    }
 
-	/**
-	 * Getter for the blockCollection.
-	 *
-	 * @return \Clastic\Block\BlockCollection
-	 */
-	public function &getCollection()
-	{
-		return $this->collection;
-	}
+    /**
+     * Getter for the blockCollection.
+     *
+     * @return \Clastic\Block\BlockCollection
+     */
+    public function &getCollection()
+    {
+        return $this->collection;
+    }
 }

@@ -16,11 +16,11 @@ use Symfony\Component\HttpFoundation\Response;
 class DashboardController extends ModuleController
 {
 
-	protected $controllerName = 'Dashboard';
+    protected $controllerName = 'Dashboard';
 
-	public function dashboard()
-	{
-		return new Response('dashboard');
-	}
+    public function dashboard()
+    {
+        return new Response('dashboard');
+    }
 
 }

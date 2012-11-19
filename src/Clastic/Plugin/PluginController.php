@@ -15,10 +15,10 @@ use Clastic\Controller;
 
 abstract class PluginController extends Controller
 {
-	final public function __construct(EventDispatcher &$dispatcher)
-	{
-		$this->registerDispatchers($dispatcher);
-	}
+    final public function __construct(EventDispatcher &$dispatcher)
+    {
+        $this->registerDispatchers($dispatcher);
+    }
 
-	abstract protected function registerDispatchers(EventDispatcher &$dispatcher);
+    abstract protected function registerDispatchers(EventDispatcher &$dispatcher);
 }

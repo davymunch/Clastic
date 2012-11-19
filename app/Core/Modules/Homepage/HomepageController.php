@@ -21,29 +21,28 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class HomepageController extends ModuleController
 {
+    protected $controllerName = 'Homepage';
 
-	protected $controllerName = 'Homepage';
+    public function handle()
+    {
+        $this->getDispatcher()->addListener(Clastic::EVENT_PRE_RENDER, array($this, 'addBlocks'));
 
-	public function handle()
-	{
-		$this->getDispatcher()->addListener(Clastic::EVENT_PRE_RENDER, array($this, 'addBlocks'));
+        $response = new Response($this->render(
+            '@Homepage/homepage.html.twig',
+            array(
+                 'rand' => rand(),
+            )
+        ));
+        $response->setPrivate();
+        $response->prepare($this->getRequest());
+        return $response;
+    }
 
-		$response = new Response($this->render('@Homepage/homepage.html.twig', array(
-      'rand' => rand(),
-    )));
-		$response->setPrivate();
-		$response->prepare($this->getRequest());
-		return $response;
-	}
-
-	public function addBlocks(BlockCollectionEvent $event)
-	{
-		$collection = $event->getCollection();
-		$block = new Block('test');
-		$block->setContent('testblock');
-		$collection->addBlock($block);
-	}
-
-
-
+    public function addBlocks(BlockCollectionEvent $event)
+    {
+        $collection = $event->getCollection();
+        $block = new Block('test');
+        $block->setContent('testblock');
+        $collection->addBlock($block);
+    }
 }
