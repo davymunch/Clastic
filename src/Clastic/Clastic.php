@@ -356,7 +356,7 @@ class Clastic extends HttpKernel\HttpKernel
      */
     public function handleError(GetResponseForExceptionEvent $event)
     {
-        $event->setResponse(new Response($event->getException()->getMessage(), $event->getException()->getCode()));
+        $event->setResponse(new Response($event->getException()->getMessage(), $event->getException()->getStatusCode()));
     }
 
 }
