@@ -66,8 +66,8 @@ class ModuleManager
 					foreach ($routes['routes'] as $name => $route) {
 						$params = $route;
 						$controller = str_replace(array(CLASTIC_ROOT . '/app', '/'), array('', '\\'), $routes['path']) . '\\' . $module . 'Controller';
-						$params['_controller'] = $controller . '::' . $route['_method'];
-						unset($params['_pattern'], $params['_method']);
+						$params['_controller'] = $controller . '::handle';
+						unset($params['_pattern']);
 						$routeCollection->add($name, new Route($route['_pattern'], $params));
 					}
 					static::$routes->addCollection($routeCollection);
