@@ -25,91 +25,98 @@ use Symfony\Component\HttpFoundation\Response;
 abstract class ModuleController extends Controller
 {
 
-	/**
-	 * Holds a reference the template engine.
-	 *
-	 * @var \Twig_Environment
-	 */
-	private $templateEngine;
+    /**
+     * Holds a reference the template engine.
+     *
+     * @var \Twig_Environment
+     */
+    private $templateEngine;
 
-	/**
-	 * Basic handler.
-	 *
-	 * @throws Exception
-	 */
-	public function handle()
-	{
-		throw new Exception('No implementation of handle found.');
-	}
-
-	/**
-	 * @return \Twig_Environment
-	 */
-	protected function &getTemplateEngine()
-	{
-		if (is_null($this->templateEngine)) {
-			$this->templateEngine = Clastic::getTemplateEngine();
-			foreach ($this->getModulePaths() as $path) {
-				$themePath = str_replace(array(
-					'/Core/',
-				  '/Contrib/',
-				  '/Sites/' . Clastic::getSiteDirectory() . '/',
-				), array(
-					'/Core/Themes/' . Clastic::getTheme() . '/',
-					'/Contrib/Themes/' . Clastic::getTheme() . '/',
-					'/Sites/' . Clastic::getSiteDirectory() . '/Themes/' . Clastic::getTheme() . '/',
-				), $path);
-				if (is_dir($themePath . '/templates')) {
-					$this->templateEngine->getLoader()->addPath($themePath . '/templates', $this->getControllerName());
-				}
-				if (is_dir($path . '/templates')) {
-					$this->templateEngine->getLoader()->addPath($path . '/templates', $this->getControllerName());
-				}
-			}
-		}
-		return $this->templateEngine;
-	}
-
-	/**
-   * Renders a template.
-   *
-   * @param string $name    The template name
-   * @param array  $context An array of parameters to pass to the template
-   *
-	 * @api
-	 *
-   * @return string The rendered template
-   */
-  protected function render($name, array $context = array(), $baseTemplate = 'page.html.twig')
-  {
-	  if (is_null($baseTemplate)) {
-      return $this->getTemplateEngine()->render($name, $context);
+    /**
+     * Basic handler.
+     *
+     * @throws Exception
+     */
+    public function handle()
+    {
+        throw new Exception('No implementation of handle found.');
     }
-	  $collection = new BlockCollection();
-	  $contentBlock = new Block('_main_');
-	  $contentBlock->setContent($this->getTemplateEngine()->render($name, $context));
-		$collection->addBlock($contentBlock);
-	  $this->getDispatcher()->dispatch(Clastic::EVENT_PRE_RENDER, new BlockCollectionEvent($collection));
-	  return $this->getTemplateEngine()->render($baseTemplate, $collection->renderBlocks());
-	}
 
-	/**
-	 * Get all module paths, excluding abstracts and interfaces.
-	 *
-	 * @return array
-	 */
-	protected function getModulePaths()
-	{
-		$paths = array();
-		$class = new ReflectionClass($this);
-		$paths[] = dirname($class->getFileName());
-		while ($class = $class->getParentClass()) {
-			$paths[] = dirname($class->getFileName());
-		}
-		$paths = array_filter($paths, function($path) {
-			return strpos($path, '/src/') === false;
-		});
-		return $paths;
-	}
+    /**
+     * @return \Twig_Environment
+     */
+    protected function &getTemplateEngine()
+    {
+        if (is_null($this->templateEngine)) {
+            $this->templateEngine = Clastic::getTemplateEngine();
+            foreach ($this->getModulePaths() as $path) {
+                $themePath = str_replace(
+                    array(
+                         '/Core/',
+                         '/Contrib/',
+                         '/Sites/' . Clastic::getSiteDirectory() . '/',
+                    ),
+                    array(
+                         '/Core/Themes/' . Clastic::getTheme() . '/',
+                         '/Contrib/Themes/' . Clastic::getTheme() . '/',
+                         '/Sites/' . Clastic::getSiteDirectory() . '/Themes/' . Clastic::getTheme() . '/',
+                    ),
+                    $path
+                );
+                if (is_dir($themePath . '/templates')) {
+                    $this->templateEngine->getLoader()->addPath($themePath . '/templates', $this->getControllerName());
+                }
+                if (is_dir($path . '/templates')) {
+                    $this->templateEngine->getLoader()->addPath($path . '/templates', $this->getControllerName());
+                }
+            }
+        }
+        return $this->templateEngine;
+    }
+
+    /**
+     * Renders a template.
+     *
+     * @param string $name    The template name
+     * @param array  $context An array of parameters to pass to the template
+     *
+     * @api
+     *
+     * @return string The rendered template
+     */
+    protected function render($name, array $context = array(), $baseTemplate = 'page.html.twig')
+    {
+        if (is_null($baseTemplate)) {
+            return $this->getTemplateEngine()->render($name, $context);
+        }
+        $collection = new BlockCollection();
+        $contentBlock = new Block('_main_');
+        $contentBlock->setContent($this->getTemplateEngine()->render($name, $context));
+        $collection->addBlock($contentBlock);
+        $this->getDispatcher()->dispatch(Clastic::EVENT_PRE_RENDER, new BlockCollectionEvent($collection));
+        return $this->getTemplateEngine()->render($baseTemplate, $collection->renderBlocks());
+    }
+
+    /**
+     * Get all module paths, excluding abstracts and interfaces.
+     *
+     * @return array
+     */
+    protected function getModulePaths()
+    {
+        $paths = array();
+        $class = new ReflectionClass($this);
+        $paths[] = dirname($class->getFileName());
+        while ($class = $class->getParentClass()) {
+            $paths[] = dirname($class->getFileName());
+        }
+        $paths = array_filter(
+            $paths,
+            function ($path) {
+                return strpos($path, '/src/') === false;
+            }
+        );
+        return $paths;
+    }
 
 }

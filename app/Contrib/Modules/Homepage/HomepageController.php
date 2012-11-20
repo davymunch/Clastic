@@ -11,18 +11,17 @@
 namespace Contrib\Modules\Homepage;
 
 
-
 class HomepageController extends \Core\Modules\Homepage\HomepageController
 {
 
-	protected $controllerName = 'Homepage';
+    protected $controllerName = 'Homepage';
 
-	public function getRoutes()
-	{
-		$routes = parent::getRoutes();
+    public function getRoutes()
+    {
+        $routes = parent::getRoutes();
 
-		return $routes;
-	}
+        return $routes;
+    }
 
 
 }
