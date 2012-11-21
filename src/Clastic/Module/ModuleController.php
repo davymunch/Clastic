@@ -37,9 +37,9 @@ abstract class ModuleController extends Controller
      *
      * @throws Exception
      */
-    public function handle()
+    public function handle($method)
     {
-        throw new Exception('No implementation of handle found.');
+        throw new \Exception('No implementation of handle found.');
     }
 
     /**

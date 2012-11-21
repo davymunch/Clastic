@@ -18,6 +18,11 @@ class DashboardController extends ModuleController
 
     protected $controllerName = 'Dashboard';
 
+    public function handle($_method)
+    {
+        return $this->$_method();
+    }
+
     public function dashboard()
     {
         return new Response('dashboard');

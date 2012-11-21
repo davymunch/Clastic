@@ -23,30 +23,31 @@ class HomepageController extends ModuleController
 {
     protected $controllerName = 'Homepage';
 
-    public function handle()
+    public function handle($_method)
     {
-      $method = $this->getRequest()->attributes->get('_method');
+        $this->getDispatcher()->addListener(Clastic::EVENT_PRE_RENDER, array($this, 'addBlocks'));
 
-      $this->getDispatcher()->addListener(Clastic::EVENT_PRE_RENDER, array($this, 'addBlocks'));
-  
-      return $this->$method();
+        return $this->$_method();
     }
-  
+
     public function addBlocks(BlockCollectionEvent $event)
     {
-      $collection = $event->getCollection();
-      $block = new Block('test');
-      $block->setContent('testblock');
-      $collection->addBlock($block);
+        $collection = $event->getCollection();
+        $block = new Block('test');
+        $block->setContent('testblock');
+        $collection->addBlock($block);
     }
-  
+
     public function homepage()
     {
-      $response = new Response($this->render('@Homepage/homepage.html.twig', array(
-        'rand' => rand(),
-      )));
-      $response->setPrivate();
-      $response->prepare($this->getRequest());
-      return $response;
+        $response = new Response($this->render(
+            '@Homepage/homepage.html.twig',
+            array(
+                 'rand' => rand(),
+            )
+        ));
+        $response->setPrivate();
+        $response->prepare($this->getRequest());
+        return $response;
     }
 }
