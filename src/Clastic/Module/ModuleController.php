@@ -51,16 +51,8 @@ abstract class ModuleController extends Controller
             $this->templateEngine = Clastic::getTemplateEngine();
             foreach ($this->getModulePaths() as $path) {
                 $themePath = str_replace(
-                    array(
-                         '/Core/',
-                         '/Contrib/',
-                         '/Sites/' . Clastic::getSiteDirectory() . '/',
-                    ),
-                    array(
-                         '/Core/Themes/' . Clastic::getTheme() . '/',
-                         '/Contrib/Themes/' . Clastic::getTheme() . '/',
-                         '/Sites/' . Clastic::getSiteDirectory() . '/Themes/' . Clastic::getTheme() . '/',
-                    ),
+                    Clastic::getPaths(),
+                    Clastic::getPaths('/Themes/' . Clastic::getTheme()),
                     $path
                 );
                 if (is_dir($themePath . '/templates')) {

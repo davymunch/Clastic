@@ -12,17 +12,14 @@ namespace Clastic\Plugin;
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Clastic\Clastic;
 
 class PluginManager
 {
     public static function triggerPlugins(EventDispatcher $dispatcher)
     {
         $pluginDirectories = array_filter(
-            array(
-                 CLASTIC_ROOT . '/app/Core/Plugins',
-                 CLASTIC_ROOT . '/app/Contrib/Plugins',
-                 CLASTIC_ROOT . '/app/Sites/Plugins',
-            ),
+            Clastic::getPaths('/Plugins'),
             function ($directory) {
                 return is_dir($directory);
             }

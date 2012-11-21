@@ -295,26 +295,17 @@ class Clastic extends HttpKernel\HttpKernel
     {
         if (is_null(self::$templateEngine)) {
             $paths = array_filter(
-                array(
-                     CLASTIC_ROOT . '/app/Core/templates',
-                     CLASTIC_ROOT . '/app/Core/Themes/' . static::getTheme() . '/templates',
-                     CLASTIC_ROOT . '/app/Contrib/templates',
-                     CLASTIC_ROOT . '/app/Contrib/Themes/' . static::getTheme() . '/templates',
-                     CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory() . '/templates',
-                     CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory() . '/Themes/' . static::getTheme()
-                       . '/templates',
-                ),
+                static::getPaths('/Themes/' . static::getTheme() . '/templates'),
                 function ($path) {
                     return is_dir($path);
                 }
             );
             $loader = new Twig_Loader_Filesystem($paths);
             self::$templateEngine = new Twig_Environment($loader, array(
-                                                                       'cache' => static::$debug ? false
-                                                                         : CLASTIC_ROOT . '/cache/templates',
-                                                                  ), array(
-                                                                          'debug' => static::$debug,
-                                                                     ));
+                'cache' => static::$debug ? false : CLASTIC_ROOT . '/cache/templates',
+            ), array(
+                'debug' => static::$debug,
+            ));
         }
         return self::$templateEngine;
     }
@@ -363,4 +354,12 @@ class Clastic extends HttpKernel\HttpKernel
       var_dump($event->getException());
     }
 
+    public static function getPaths($suffix = '')
+    {
+        return array(
+             CLASTIC_ROOT . '/app/Core' . $suffix,
+             CLASTIC_ROOT . '/app/Contrib' . $suffix,
+             CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory() . $suffix,
+        );
+    }
 }

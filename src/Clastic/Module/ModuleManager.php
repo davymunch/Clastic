@@ -103,11 +103,7 @@ class ModuleManager
     public static function getModulePaths()
     {
         return array_filter(
-            array(
-                 CLASTIC_ROOT . '/app/Core/Modules',
-                 CLASTIC_ROOT . '/app/Contrib/Modules',
-                 CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory() . '/Modules',
-            ),
+            Clastic::getPaths('/Modules'),
             function ($directory) {
                 return is_dir($directory);
             }
