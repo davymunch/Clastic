@@ -9,7 +9,7 @@
  */
 
 use Clastic\Clastic;
-use Symfony\Component\HttpFoundation\Request;
+use Clastic\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpCache;
 use Symfony\Component\Routing;

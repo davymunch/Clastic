@@ -11,6 +11,8 @@
 namespace Clastic;
 
 use Clastic\Module\ModuleManager;
+use Clastic\Event\ThemeEvent;
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -27,7 +29,6 @@ use Clastic\Plugin\PluginManager;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel;
 use Symfony\Component\Routing;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -47,6 +48,11 @@ class Clastic extends HttpKernel\HttpKernel
      * Event name. Dispatched before rendering the base template.
      */
     const EVENT_PRE_RENDER = 'clastic.pre_render';
+
+    /**
+     * Event name. Dispatched after resolving the theme.
+     */
+    const EVENT_THEME = 'clastic.theme';
 
     /**
      * Holds the config of the current site.
@@ -125,7 +131,7 @@ class Clastic extends HttpKernel\HttpKernel
      *
      * @var string
      */
-    protected static $theme = 'Backoffice';
+    protected static $theme;
 
     /**
      * Constructor
@@ -177,7 +183,7 @@ class Clastic extends HttpKernel\HttpKernel
      *
      * @api
      */
-    public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
+    public function handle(\Symfony\Component\HttpFoundation\Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
     {
         $event = new RequestEvent($request);
         $request = $this->dispatcher->dispatch(Clastic::EVENT_PRE_HANDLE, $event)->getRequest();
@@ -337,6 +343,12 @@ class Clastic extends HttpKernel\HttpKernel
      */
     public static function getTheme()
     {
+        if (is_null(static::$theme)) {
+            // @todo resolve theme from db of config.
+            static::$theme = 'DemoTheme';
+            $event = new ThemeEvent(static::$theme);
+            static::$theme = self::getDispatcher()->dispatch(static::EVENT_THEME, $event)->getTheme();
+        }
         return static::$theme;
     }
 

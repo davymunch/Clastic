@@ -66,7 +66,7 @@ class Controller
      *
      * @api
      *
-     * @return \Symfony\Component\HttpFoundation\Request
+     * @return \Clastic\Request
      */
     final public function &getRequest()
     {

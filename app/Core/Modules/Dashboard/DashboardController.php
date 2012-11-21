@@ -25,7 +25,7 @@ class DashboardController extends ModuleController
 
     public function dashboard()
     {
-        return new Response('dashboard');
+        return new Response($this->render('@Dashboard/dashboard.html.twig'));
     }
 
 }

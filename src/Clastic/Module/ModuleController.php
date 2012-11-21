@@ -96,6 +96,8 @@ abstract class ModuleController extends Controller
      */
     protected function getModulePaths()
     {
+        return Clastic::getPaths('/Modules/' . $this->getControllerName());
+
         $paths = array();
         $class = new ReflectionClass($this);
         $paths[] = dirname($class->getFileName());
