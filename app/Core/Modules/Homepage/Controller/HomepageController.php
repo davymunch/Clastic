@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Core\Modules\Homepage;
+namespace Core\Modules\Homepage\Controller;
 
 use Clastic\Module\ModuleController;
 use Clastic\Block\Block;

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Core\Modules\Dashboard;
+namespace Core\Modules\Dashboard\Controller;
 
 use Clastic\Module\ModuleController;
 use Symfony\Component\HttpFoundation\Response;

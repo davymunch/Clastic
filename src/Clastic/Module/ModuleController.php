@@ -58,8 +58,8 @@ abstract class ModuleController extends Controller
                 if (is_dir($themePath . '/templates')) {
                     $this->templateEngine->getLoader()->addPath($themePath . '/templates', $this->getControllerName());
                 }
-                if (is_dir($path . '/templates')) {
-                    $this->templateEngine->getLoader()->addPath($path . '/templates', $this->getControllerName());
+                if (is_dir($path . '/Resources/templates')) {
+                    $this->templateEngine->getLoader()->addPath($path . '/Resources/templates', $this->getControllerName());
                 }
             }
         }

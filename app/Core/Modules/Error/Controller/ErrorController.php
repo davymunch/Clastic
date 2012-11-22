@@ -9,7 +9,7 @@
  */
 
 
-namespace Core\Modules\Error;
+namespace Core\Modules\Error\Controller;
 
 use Clastic\Module\ModuleController;
 use Symfony\Component\HttpFoundation\Response;
