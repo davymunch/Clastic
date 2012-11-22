@@ -52,8 +52,8 @@ class ModuleManager
         $tmpRoutes = array();
         foreach ($iterator as $module) {
           $tmpRoutes[$module->getRelativePathname()]['path'] = $module->getRealPath();
-          if (file_exists($module->getRealPath() . '/conf/routes.yml')) {
-            $configRoutes = Yaml::parse($module->getRealPath() . '/conf/routes.yml');
+          if (file_exists($module->getRealPath() . '/Resources/config/routes.yml')) {
+            $configRoutes = Yaml::parse($module->getRealPath() . '/Resources/config/routes.yml');
             foreach ((array)$configRoutes as $name => $route) {
               $tmpRoutes[$module->getRelativePathname()]['routes'][$name] = $route;
             }
@@ -65,7 +65,7 @@ class ModuleManager
           if (isset($routes['routes'])) {
             foreach ($routes['routes'] as $name => $route) {
               $params = $route;
-              $controller = str_replace(array(CLASTIC_ROOT . '/app', '/'), array('', '\\'), $routes['path']) . '\\' . $module . 'Controller';
+              $controller = str_replace(array(CLASTIC_ROOT . '/app', '/'), array('', '\\'), $routes['path']) . '\\Controller\\' . $module . 'Controller';
               $params['_controller'] = $controller . '::handle';
               unset($params['_pattern']);
               $routeCollection->add($name, new Route($route['_pattern'], $params));

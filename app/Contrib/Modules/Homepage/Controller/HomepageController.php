@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Contrib\Modules\Homepage;
+namespace Contrib\Modules\Homepage\Controller;
 
 
-class HomepageController extends \Core\Modules\Homepage\HomepageController
+class HomepageController extends \Core\Modules\Homepage\Controller\HomepageController
 {
 
     protected $controllerName = 'Homepage';
