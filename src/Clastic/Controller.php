@@ -76,4 +76,9 @@ class Controller
         return $this->request;
     }
 
+    final protected function &getAssetManager()
+    {
+        return Clastic::getAssetManager();
+    }
+
 }

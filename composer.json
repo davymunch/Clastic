@@ -13,6 +13,7 @@
     "require": {
         "php": ">=5.3.3",
         "doctrine/orm": "2.4.*",
+        "kriswallsmith/assetic": "1.1.*",
         "monolog/monolog": ">=1.0.0,<1.2-dev",
         "symfony/config": ">=2.1,<2.3-dev",
         "symfony/event-dispatcher": ">=2.1,<2.3-dev",

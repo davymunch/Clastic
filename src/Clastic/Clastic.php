@@ -32,6 +32,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel;
 use Symfony\Component\Routing;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Clastic\Asset\AssetManager;
 
 
 /**
@@ -373,5 +374,11 @@ class Clastic extends HttpKernel\HttpKernel
              CLASTIC_ROOT . '/app/Contrib' . $suffix,
              CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory() . $suffix,
         );
+    }
+
+    public static function &getAssetManager()
+    {
+        $assetManager = new AssetManager();
+        return $assetManager;
     }
 }
