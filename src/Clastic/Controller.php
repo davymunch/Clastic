@@ -10,6 +10,8 @@
 
 namespace Clastic;
 
+use Clastic\Asset\Assets;
+
 /**
  * The base of all controllers.
  */
@@ -36,11 +38,14 @@ class Controller
      */
     private $request;
 
+    /**
+     * @var Assets
+     */
     protected $assets;
 
     public function __construct()
     {
-        $this->assets = &Clastic::$assets;
+        $this->assets = &Clastic::getAssets();
     }
 
     /**

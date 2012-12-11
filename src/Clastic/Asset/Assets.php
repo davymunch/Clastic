@@ -12,6 +12,9 @@
 namespace Clastic\Asset;
 
 use Assetic\AssetManager;
+use Assetic\FilterManager;
+use Assetic\Factory\Worker\CacheBustingWorker;
+use Assetic\AssetWriter;
 use Assetic\Factory\AssetFactory;
 
 class Assets
@@ -20,21 +23,39 @@ class Assets
 
     protected $factory;
 
+    protected $writer;
+
+    protected $filter;
+
     public function __construct()
     {
         $this->manager = new AssetManager();
-        $this->factory = new AssetFactory(CLASTIC_ROOT . '/cache');
+        $this->filter = new FilterManager();
+        $this->factory = new AssetFactory(CLASTIC_ROOT . '/');
         $this->factory->setAssetManager($this->manager);
+        $this->factory->setFilterManager($this->filter);
+        //$this->factory->addWorker(new CacheBustingWorker(CacheBustingWorker::STRATEGY_CONTENT));
+        $this->writer = new AssetWriter(CLASTIC_ROOT . '/cache');
     }
 
-    public function getFactory()
+    public function &getFactory()
     {
         return $this->factory;
     }
 
-    public function getManager()
+    public function &getManager()
     {
         return $this->manager;
+    }
+
+    public function &getWriter()
+    {
+        return $this->writer;
+    }
+
+    public function &getFilter()
+    {
+        return $this->filter;
     }
 
 }

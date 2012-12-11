@@ -137,10 +137,7 @@ class Clastic extends HttpKernel\HttpKernel
      */
     protected static $theme;
 
-    /**
-     * @var \Assetic\AssetManager
-     */
-    public static $assets;
+    protected static $assets;
 
     /**
      * Constructor
@@ -170,8 +167,6 @@ class Clastic extends HttpKernel\HttpKernel
 
         $this->setBindings();
         self::$request = &$request;
-
-        static::$assets = new Assets();
 
         parent::__construct($dispatcher, $resolver);
     }
@@ -384,5 +379,13 @@ class Clastic extends HttpKernel\HttpKernel
              CLASTIC_ROOT . '/app/Contrib' . $suffix,
              CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory() . $suffix,
         );
+    }
+
+    public static function &getAssets()
+    {
+        if (is_null(static::$assets)) {
+            static::$assets = new Assets();
+        }
+        return static::$assets;
     }
 }
