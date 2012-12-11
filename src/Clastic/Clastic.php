@@ -11,6 +11,9 @@
 namespace Clastic;
 
 use Clastic\Module\ModuleManager;
+use Clastic\Asset\Assets;
+use Assetic\Factory\AssetFactory;
+use Assetic\Extension\Twig\AsseticExtension;
 use Clastic\Event\ThemeEvent;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Response;
@@ -135,6 +138,11 @@ class Clastic extends HttpKernel\HttpKernel
     protected static $theme;
 
     /**
+     * @var \Assetic\AssetManager
+     */
+    public static $assets;
+
+    /**
      * Constructor
      *
      * @param EventDispatcherInterface    $dispatcher An EventDispatcherInterface instance
@@ -162,6 +170,8 @@ class Clastic extends HttpKernel\HttpKernel
 
         $this->setBindings();
         self::$request = &$request;
+
+        static::$assets = new Assets();
 
         parent::__construct($dispatcher, $resolver);
     }
@@ -374,11 +384,5 @@ class Clastic extends HttpKernel\HttpKernel
              CLASTIC_ROOT . '/app/Contrib' . $suffix,
              CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory() . $suffix,
         );
-    }
-
-    public static function &getAssetManager()
-    {
-        $assetManager = new AssetManager();
-        return $assetManager;
     }
 }

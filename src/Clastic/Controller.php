@@ -36,6 +36,13 @@ class Controller
      */
     private $request;
 
+    protected $assets;
+
+    public function __construct()
+    {
+        $this->assets = &Clastic::$assets;
+    }
+
     /**
      * Getter for the controller's name.
      *
@@ -74,11 +81,6 @@ class Controller
             $this->request = Clastic::getRequest();
         }
         return $this->request;
-    }
-
-    final protected function &getAssetManager()
-    {
-        return Clastic::getAssetManager();
     }
 
 }

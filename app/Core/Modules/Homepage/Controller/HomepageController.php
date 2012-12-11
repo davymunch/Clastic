@@ -11,11 +11,6 @@
 namespace Core\Modules\Homepage\Controller;
 
 use Clastic\Module\ModuleController;
-use Assetic\Filter\CssImportFilter;
-use Assetic\Filter\CssMinFilter;
-use Assetic\FilterManager;
-use Assetic\Asset\FileAsset;
-use Assetic\Asset\AssetCollection;
 use Clastic\Block\Block;
 use Clastic\Clastic;
 use Clastic\Event\BlockCollectionEvent;
@@ -45,8 +40,7 @@ class HomepageController extends ModuleController
 
     public function homepage()
     {
-
-        var_dump($this->getAssetManager());
+        var_dump($this->assets);
 
         $response = new Response($this->render(
             '@Homepage/homepage.html.twig',
