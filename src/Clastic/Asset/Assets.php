@@ -184,7 +184,7 @@ class Assets
     /**
      * A collection of all stylesheets.
      *
-     * @return \Assetic\Asset\AssetInterface
+     * @return \Assetic\Asset\AssetCollection
      */
     public function &css()
     {
@@ -198,7 +198,7 @@ class Assets
     /**
      * A collection of all javascript files.
      *
-     * @return \Assetic\Asset\AssetInterface
+     * @return \Assetic\Asset\AssetCollection
      */
     public function &js()
     {
