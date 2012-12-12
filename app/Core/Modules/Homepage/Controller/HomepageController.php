@@ -54,35 +54,10 @@ class HomepageController extends ModuleController
 
         $this->assets->js()->add(new AssetReference($this->assets->getAsset(), 'jquery2'));
 
-        var_dump($this->assets->getCssUri());
-        var_dump($this->assets->getJsUri());
-/*
-        $am = $this->assets->getAsset();
-        $am->set('homepage_css', new FileAsset(__DIR__.'/../Resources/public/css/homepage.css'));
-        $am->set('homepage2_css', new FileAsset(__DIR__.'/../Resources/public/css/homepage2.css'));
-        $this->assets->getFilter()->set('css', new FilterCollection(array(
-            new CssMinFilter()
-        )));
+        //TODO these will be placed in the top template.
+        //var_dump($this->assets->getCssUri());
+        //var_dump($this->assets->getJsUri());
 
-        $am->set('module', $this->assets->getFactory()->createAsset(array(
-            '@homepage_css',
-            '@homepage2_css',
-        )));
-
-
-        $m = $this->assets->getAsset()->get('module');
-        $m->ensureFilter($this->assets->getFilter()->get('css'));
-        $m->setTargetPath($m->getTargetPath() . '.css');
-        $writer = $this->assets->getWriter();
-        $writer->writeAsset($m);
-
-        $m2 = $this->assets->getFactory()->createAsset('@homepage_css');
-        $m2->ensureFilter($this->assets->getFilter()->get('css'));
-        $m2->add(new FileAsset(__DIR__.'/../Resources/public/css/homepage2.css'));
-        $m2->setTargetPath($m2->getTargetPath() . '.css');
-        $writer = $this->assets->getWriter();
-        $writer->writeAsset($m2);
-*/
         $response = new Response($this->render(
             '@Homepage/homepage.html.twig',
             array(
