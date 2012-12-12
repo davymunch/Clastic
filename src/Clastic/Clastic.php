@@ -372,6 +372,12 @@ class Clastic extends HttpKernel\HttpKernel
       var_dump($event->getException());
     }
 
+    /**
+     * Get a list of all the paths, they will be appended with a $suffix.
+     *
+     * @param string $suffix
+     * @return string[]
+     */
     public static function getPaths($suffix = '')
     {
         return array(
@@ -381,6 +387,11 @@ class Clastic extends HttpKernel\HttpKernel
         );
     }
 
+    /**
+     * Getter for the Assetic bridge package.
+     *
+     * @return Assets
+     */
     public static function &getAssets()
     {
         if (is_null(static::$assets)) {

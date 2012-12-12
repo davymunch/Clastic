@@ -11,6 +11,8 @@
 namespace Core\Modules\Homepage\Controller;
 
 use Clastic\Module\ModuleController;
+use Assetic\Asset\AssetReference;
+use CssRemoveCommentsMinifierFilter;
 use Assetic\Filter\FilterCollection;
 use Assetic\Filter\CssMinFilter;
 use Assetic\Filter\Yui\JsCompressorFilter;
@@ -47,21 +49,28 @@ class HomepageController extends ModuleController
 
     public function homepage()
     {
+        $this->assets->css()->add(new AssetReference($this->assets->getAsset(), 'jquery'));
+        $this->assets->css()->add(new FileAsset(__DIR__.'/../Resources/public/css/homepage2.css'));
 
-        $am = $this->assets->getManager();
+        $this->assets->js()->add(new AssetReference($this->assets->getAsset(), 'jquery2'));
+
+        var_dump($this->assets->getCssUri());
+        var_dump($this->assets->getJsUri());
+/*
+        $am = $this->assets->getAsset();
         $am->set('homepage_css', new FileAsset(__DIR__.'/../Resources/public/css/homepage.css'));
         $am->set('homepage2_css', new FileAsset(__DIR__.'/../Resources/public/css/homepage2.css'));
+        $this->assets->getFilter()->set('css', new FilterCollection(array(
+            new CssMinFilter()
+        )));
 
         $am->set('module', $this->assets->getFactory()->createAsset(array(
             '@homepage_css',
             '@homepage2_css',
         )));
 
-        $this->assets->getFilter()->set('css', new FilterCollection(array(
-            new CssMinFilter()
-        )));
 
-        $m = $this->assets->getManager()->get('module');
+        $m = $this->assets->getAsset()->get('module');
         $m->ensureFilter($this->assets->getFilter()->get('css'));
         $m->setTargetPath($m->getTargetPath() . '.css');
         $writer = $this->assets->getWriter();
@@ -73,7 +82,7 @@ class HomepageController extends ModuleController
         $m2->setTargetPath($m2->getTargetPath() . '.css');
         $writer = $this->assets->getWriter();
         $writer->writeAsset($m2);
-
+*/
         $response = new Response($this->render(
             '@Homepage/homepage.html.twig',
             array(
