@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Contrib\Plugins\Alias;
+namespace Contrib\Plugins\Alias\Controller;
 
 use Clastic\Plugin\PluginController;
 use Clastic\Event\RequestEvent;
 use Clastic\Clastic;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-class AliasPlugin extends PluginController
+class AliasController extends PluginController
 {
     public function registerDispatchers(EventDispatcher &$dispatcher)
     {

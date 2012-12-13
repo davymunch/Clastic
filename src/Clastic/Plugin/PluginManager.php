@@ -27,15 +27,24 @@ class PluginManager
 
         $finder = new Finder();
         $iterator = $finder
-          ->directories()
-          ->depth(0)
-          ->in($pluginDirectories);
+            ->directories()
+            ->depth(0)
+            ->in($pluginDirectories);
 
         $plugins = array();
         foreach ($iterator as $plugin) {
-            $pluginFile = $plugin->getRealPath() . '/' . $plugin->getRelativePathname() . 'Plugin.php';
-            if (file_exists($pluginFile)) {
-                $plugins[$plugin->getRelativePathname()] = $pluginFile;
+            if (!is_dir($plugin->getRealPath() . '/Controller')) {
+                continue;
+            }
+            $controllers = $finder
+                ->files()
+                ->name('*Controller.php')
+                ->in($plugin->getRealPath() . '/Controller');
+            foreach ($controllers as $controller) {
+                $pluginFile = $plugin->getPath() . '/' . $plugin->getRelativePathname() . 'Controller.php';
+                if (file_exists($pluginFile)) {
+                    $plugins[$plugin->getRelativePathname()] = $pluginFile;
+                }
             }
         }
         foreach ($plugins as $plugin) {

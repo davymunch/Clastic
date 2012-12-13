@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Core\Plugins\Backoffice;
+namespace Core\Plugins\Backoffice\Controller;
 
 use Clastic\Clastic;
 use Clastic\Event\ThemeEvent;
@@ -18,7 +18,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 /**
  * Plugin that handles the backoffice.
  */
-class BackofficePlugin extends PluginController
+class BackofficeController extends PluginController
 {
     protected function registerDispatchers(EventDispatcher &$dispatcher)
     {
