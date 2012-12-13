@@ -36,15 +36,14 @@ class PluginManager
             if (!is_dir($plugin->getRealPath() . '/Controller')) {
                 continue;
             }
+            $finder = new Finder();
             $controllers = $finder
                 ->files()
                 ->name('*Controller.php')
                 ->in($plugin->getRealPath() . '/Controller');
             foreach ($controllers as $controller) {
-                $pluginFile = $plugin->getPath() . '/' . $plugin->getRelativePathname() . 'Controller.php';
-                if (file_exists($pluginFile)) {
-                    $plugins[$plugin->getRelativePathname()] = $pluginFile;
-                }
+                $controllerName = substr($controller->getRelativePathname(), 0, -14);
+                $plugins[$plugin->getRelativePathname() . '-' . $controllerName] = $controller->getPathname();
             }
         }
         foreach ($plugins as $plugin) {
