@@ -68,7 +68,7 @@ class Assets
         $this->factory = new AssetFactory(CLASTIC_ROOT . '/');
         $this->factory->setAssetManager($this->asset);
         $this->factory->setFilterManager($this->filter);
-        //$this->factory->addWorker(new CacheBustingWorker(CacheBustingWorker::STRATEGY_CONTENT));
+        $this->factory->addWorker(new CacheBustingWorker(CacheBustingWorker::STRATEGY_CONTENT));
 
         $this->writer = new AssetWriter(CLASTIC_ROOT . '/' . $this->writeDirectory);
     }
@@ -86,10 +86,10 @@ class Assets
      */
     protected function prepareBags()
     {
-        $this->getFilter()->set('css', new FilterCollection(array()));
+        $this->getFilter()->set('css', new FilterCollection());
         $cssFilters = $this->getFilter()->get('css');
         $cssFilters->ensure(new CssMinFilter());
-        $this->getAsset()->set('css', $this->getFactory()->createAsset(array(), array('css')));
+        $this->getAsset()->set('css', new AssetCollection());
 
         $this->getFilter()->set('js', new FilterCollection(array()));
         //$jsFilters = $this->getFilter()->get('js');
@@ -173,7 +173,7 @@ class Assets
     {
         $assets = $this->getAsset()->get($name);
         if (count($assets->all())) {
-            $assets->setTargetPath($assets->getTargetPath() . '.' . $extension);
+            $assets->setTargetPath('assetic/' . $this->factory->generateAssetName($assets, array()) . '.' . $extension);
             $writer = $this->getWriter();
             $writer->writeAsset($assets);
             return $this->writeDirectory . '/' . $assets->getTargetPath();
