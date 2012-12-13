@@ -11,6 +11,10 @@
 namespace Core\Modules\Dashboard\Controller;
 
 use Clastic\Module\ModuleController;
+use Assetic\AssetManager;
+use Assetic\Asset\StringAsset;
+use Assetic\Asset\AssetCollection;
+use Assetic\Asset\AssetReference;
 use Symfony\Component\HttpFoundation\Response;
 
 class DashboardController extends ModuleController

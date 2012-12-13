@@ -11,6 +11,10 @@
 namespace Clastic;
 
 use Clastic\Module\ModuleManager;
+use Twig_Function_Method;
+use Twig_Function_Node;
+use Twig_Function_Function;
+use Twig_SimpleFunction;
 use Clastic\Asset\Assets;
 use Assetic\Factory\AssetFactory;
 use Clastic\Event\ThemeEvent;
@@ -324,6 +328,7 @@ class Clastic extends HttpKernel\HttpKernel
         }
         return self::$templateEngine;
     }
+
 
     /**
      * Getter for the site's ID.

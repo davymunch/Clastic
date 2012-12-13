@@ -11,6 +11,7 @@
 namespace Clastic\Module;
 
 use Clastic\Clastic;
+use Twig_SimpleFunction;
 use Clastic\Event\BlockCollectionEvent;
 use Clastic\Block\BlockCollection;
 use Clastic\Block\Block;
