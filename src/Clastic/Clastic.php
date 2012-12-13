@@ -13,9 +13,7 @@ namespace Clastic;
 use Clastic\Module\ModuleManager;
 use Clastic\Asset\Assets;
 use Assetic\Factory\AssetFactory;
-use Assetic\Extension\Twig\AsseticExtension;
 use Clastic\Event\ThemeEvent;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -52,6 +50,11 @@ class Clastic extends HttpKernel\HttpKernel
      * Event name. Dispatched before rendering the base template.
      */
     const EVENT_PRE_RENDER = 'clastic.pre_render';
+
+    /**
+     * Event name. Dispatched when the assets are initialized.
+     */
+    const EVENT_ASSETS_DEFAULTS = 'clastic.assets.defaults';
 
     /**
      * Event name. Dispatched after resolving the theme.
@@ -163,10 +166,10 @@ class Clastic extends HttpKernel\HttpKernel
 
         $dispatcher->addListener(KernelEvents::EXCEPTION, array($this, 'handleError'));
 
-        PluginManager::triggerPlugins($dispatcher);
-
         $this->setBindings();
         self::$request = &$request;
+
+        PluginManager::triggerPlugins($dispatcher);
 
         parent::__construct($dispatcher, $resolver);
     }
