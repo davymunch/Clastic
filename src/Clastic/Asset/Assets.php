@@ -12,8 +12,9 @@
 namespace Clastic\Asset;
 
 use Assetic\AssetManager;
-use Assetic\Asset\StringAsset;
-use Assetic\Asset\FileAsset;
+use Assetic\Asset\AssetCollection;
+use Clastic\Event\AssetEvent;
+use Clastic\Clastic;
 use Assetic\Filter\FilterCollection;
 use Assetic\Filter\CssMinFilter;
 use Assetic\FilterManager;
@@ -51,8 +52,8 @@ class Assets
     public function __construct()
     {
         $this->instantiate();
-        $this->setDefaults();
         $this->prepareBags();
+        $this->setDefaults();
     }
 
     /**
@@ -77,8 +78,7 @@ class Assets
      */
     protected function setDefaults()
     {
-        $this->getAsset()->set('jquery', new StringAsset('.hide {display: none;} '));
-        $this->getAsset()->set('jquery2', new StringAsset('alert("test");'));
+        Clastic::getDispatcher()->dispatch(Clastic::EVENT_ASSETS_DEFAULTS, new AssetEvent($this))->getAssets();
     }
 
     /**
@@ -97,7 +97,7 @@ class Assets
     }
 
     /**
-     * Getter for the AssetFactory
+     * Getter for the AssetFactory.
      *
      * @return \Assetic\Factory\AssetFactory
      */
@@ -107,7 +107,7 @@ class Assets
     }
 
     /**
-     * Getter for the AssetManager
+     * Getter for the AssetManager.
      *
      * @return \Assetic\AssetManager
      */
@@ -117,7 +117,7 @@ class Assets
     }
 
     /**
-     * Getter for the AssetWriter
+     * Getter for the AssetWriter.
      *
      * @return \Assetic\AssetWriter
      */
@@ -127,7 +127,7 @@ class Assets
     }
 
     /**
-     * Getter for the FilterManager
+     * Getter for the FilterManager.
      *
      * @return \Assetic\FilterManager
      */
