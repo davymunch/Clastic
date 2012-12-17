@@ -49,20 +49,9 @@ class HomepageController extends ModuleController
 
     public function homepage()
     {
-        $this->assets->css()->add(new AssetReference($this->assets->getAsset(), 'jquery'));
-        $this->assets->css()->add(new FileAsset(__DIR__.'/../Resources/public/css/homepage2.css'));
-
-        $this->assets->js()->add(new AssetReference($this->assets->getAsset(), 'jquery2'));
-
-        //TODO these will be placed in the top template.
-        //var_dump($this->assets->getCssUri());
-        //var_dump($this->assets->getJsUri());
-
         $response = new Response($this->render(
             '@Homepage/homepage.html.twig',
-            array(
-                 'rand' => rand(),
-            )
+            array('rand' => rand())
         ));
         $response->setPrivate();
         $response->prepare($this->getRequest());

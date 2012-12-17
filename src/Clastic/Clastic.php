@@ -11,10 +11,7 @@
 namespace Clastic;
 
 use Clastic\Module\ModuleManager;
-use Twig_Function_Method;
-use Twig_Function_Node;
-use Twig_Function_Function;
-use Twig_SimpleFunction;
+use Clastic\Bridge\TwigExtension;
 use Clastic\Asset\Assets;
 use Assetic\Factory\AssetFactory;
 use Clastic\Event\ThemeEvent;
@@ -325,6 +322,7 @@ class Clastic extends HttpKernel\HttpKernel
             ), array(
                 'debug' => static::$debug,
             ));
+            self::$templateEngine->addExtension(new TwigExtension());
         }
         return self::$templateEngine;
     }
