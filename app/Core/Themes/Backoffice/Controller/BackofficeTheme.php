@@ -34,9 +34,10 @@ class BackofficeTheme
         $assets = &$event->getAssets();
 
         // Add css
-        $assets->css()->add(new FileAsset(__DIR__ . '/../Resources/css/main.css'));
         $assets->css()->add(new FileAsset(__DIR__ . '/../Resources/css/vendor/normalize.css'));
-        $assets->css()->add(new FileAsset(__DIR__ . '/../Resources/css/vendor/bootstrap.min.css'));
+        $assets->css()->add(new FileAsset(__DIR__ . '/../Resources/css/vendor/bootstrap.css'));
+        $assets->css()->add(new FileAsset(__DIR__ . '/../Resources/css/main.css'));
+        $assets->css()->add(new FileAsset(__DIR__ . '/../Resources/css/vendor/bootstrap-responsive.css'));
 
         $assets->js_header()->add(new FileAsset(__DIR__ . '/../Resources/js/vendor/modernizer-2.6.2.min.js'));
 
@@ -45,6 +46,6 @@ class BackofficeTheme
         $assets->js()->add(new FileAsset(__DIR__ . '/../Resources/js/plugins.js'));
 
         // Add css filters
-        $assets->getFilter()->get('css')->ensure(new CssMinFilter());
+        //$assets->getFilter()->get('css')->ensure(new CssMinFilter());
     }
 }
