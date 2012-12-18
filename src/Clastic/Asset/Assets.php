@@ -137,9 +137,9 @@ class Assets
      *
      * @return bool|string
      */
-    public function getCssUri()
+    public function getCssUri($name = 'css')
     {
-        return $this->getAssetUri('css', 'css');
+        return $this->getAssetUri($name, 'css');
     }
 
     /**
@@ -149,9 +149,9 @@ class Assets
      *
      * @return bool|string
      */
-    public function getJsUri()
+    public function getJsUri($name = 'js')
     {
-        return $this->getAssetUri('js', 'js');
+        return $this->getAssetUri($name, 'js');
     }
 
     /**
@@ -168,7 +168,7 @@ class Assets
         $assets = $this->getAsset()->get($name);
         if (count($assets->all())) {
             $path = 'assetic/' . $this->factory->generateAssetName($assets, array()) . '.' . $extension;
-            $assets->ensureFilter($this->getFilter()->get($name));
+            $assets->ensureFilter($this->getFilter()->get($extension));
             $assets->setTargetPath($path);
             $writer = $this->getWriter();
             $writer->writeAsset($assets);
@@ -177,31 +177,11 @@ class Assets
         return false;
     }
 
-    /**
-     * A collection of all stylesheets.
-     *
-     * @return \Assetic\Asset\AssetCollection
-     */
-    public function &css()
+    public function __call($name, $arguments = array())
     {
-        static $asset;
-        if (is_null($asset)) {
-            $asset = $this->getAsset()->get('css');
+        if (!$this->getAsset()->has($name)) {
+            $this->getAsset()->set($name, new AssetCollection());
         }
-        return $asset;
-    }
-
-    /**
-     * A collection of all javascript files.
-     *
-     * @return \Assetic\Asset\AssetCollection
-     */
-    public function &js()
-    {
-        static $asset;
-        if (is_null($asset)) {
-            $asset = $this->getAsset()->get('js');
-        }
-        return $asset;
+        return $this->getAsset()->get($name);
     }
 }

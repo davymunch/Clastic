@@ -32,13 +32,13 @@ class TwigExtension extends \Twig_Extension
         );
     }
 
-    public function renderStylesheets()
+    public function renderStylesheets($name = 'css')
     {
-        return '<link href="' . Clastic::getAssets()->getCssUri() . '" type="text/css" rel="stylesheet" />';
+        return '<link href="' . Clastic::getAssets()->getCssUri($name) . '" type="text/css" rel="stylesheet" />';
     }
 
-    public function renderScripts()
+    public function renderScripts($name = 'js')
     {
-        return '<script type="text/javascript" src="' . Clastic::getAssets()->getJsUri() . '"></script>';
+        return '<script type="text/javascript" src="' . Clastic::getAssets()->getJsUri($name) . '"></script>';
     }
 }

@@ -11,6 +11,7 @@
 namespace Clastic;
 
 use Clastic\Module\ModuleManager;
+use Core\Themes\Backoffice\Controller\BackofficeTheme;
 use Clastic\Bridge\TwigExtension;
 use Clastic\Asset\Assets;
 use Assetic\Factory\AssetFactory;
@@ -195,6 +196,7 @@ class Clastic extends HttpKernel\HttpKernel
      */
     public function handle(\Symfony\Component\HttpFoundation\Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
     {
+        $this->prepareTheme();
         $event = new RequestEvent($request);
         $request = $this->dispatcher->dispatch(Clastic::EVENT_PRE_HANDLE, $event)->getRequest();
         return parent::handle($request, $type, $catch);
@@ -311,7 +313,7 @@ class Clastic extends HttpKernel\HttpKernel
     {
         if (is_null(self::$templateEngine)) {
             $paths = array_filter(
-                static::getPaths('/Themes/' . static::getTheme() . '/templates'),
+                static::getPaths('/Themes/' . static::getTheme()->getName() . '/Resources/templates'),
                 function ($path) {
                     return is_dir($path);
                 }
@@ -351,15 +353,14 @@ class Clastic extends HttpKernel\HttpKernel
     /**
      * Getter for the site's theme.
      *
-     * @return string
+     * @return todo
      */
     public static function getTheme()
     {
-        if (is_null(static::$theme)) {
-            // @todo resolve theme from db of config.
-            static::$theme = 'DemoTheme';
-            $event = new ThemeEvent(static::$theme);
-            static::$theme = self::getDispatcher()->dispatch(static::EVENT_THEME, $event)->getTheme();
+        static $loaded;
+        if (!$loaded) {
+            static::$theme = self::getDispatcher()->dispatch(static::EVENT_THEME, new ThemeEvent(static::$theme))->getTheme();
+            $loaded = true;
         }
         return static::$theme;
     }
@@ -404,5 +405,10 @@ class Clastic extends HttpKernel\HttpKernel
             static::$assets = new Assets();
         }
         return static::$assets;
+    }
+
+    public static function prepareTheme()
+    {
+        static::$theme = new BackofficeTheme();
     }
 }

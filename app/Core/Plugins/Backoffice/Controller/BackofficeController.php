@@ -27,26 +27,6 @@ class BackofficeController extends PluginController
 {
     protected function registerDispatchers(EventDispatcher &$dispatcher)
     {
-        if ($this->getRequest()->isBackoffice()) {
-            $dispatcher->addListener(Clastic::EVENT_THEME, array($this, 'switchBackofficeTheme'));
-            $dispatcher->addListener(Clastic::EVENT_ASSETS_DEFAULTS, array($this, 'setAssets'));
-        }
     }
 
-    public function switchBackofficeTheme(ThemeEvent $event)
-    {
-        $theme = &$event->getTheme();
-        $theme = 'Backoffice';
-    }
-
-    public function setAssets(AssetEvent $event)
-    {
-        $assets = &$event->getAssets();
-
-        // Add css
-        $assets->css()->add(new FileAsset(__DIR__ . '/../Resources/public/css/normalize.css'));
-
-        // Add css filters
-        $assets->getFilter()->get('css')->ensure(new CssMinFilter());
-    }
 }
