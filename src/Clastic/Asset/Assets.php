@@ -12,6 +12,8 @@
 namespace Clastic\Asset;
 
 use Assetic\AssetManager;
+use Assetic\Cache\FilesystemCache;
+use Assetic\Asset\AssetCache;
 use Assetic\Asset\AssetCollection;
 use Clastic\Event\AssetEvent;
 use Clastic\Clastic;
@@ -167,12 +169,13 @@ class Assets
     {
         $assets = $this->getAsset()->get($name);
         if (count($assets->all())) {
-            $path = 'assetic/' . $this->factory->generateAssetName($assets, array()) . '.' . $extension;
-            $assets->ensureFilter($this->getFilter()->get($extension));
-            $assets->setTargetPath($path);
+            $cache = new AssetCache($assets, new FilesystemCache(CLASTIC_ROOT . '/' . $this->writeDirectory));
+            $path = 'assetic/' . $this->factory->generateAssetName($cache, array()) . '.' . $extension;
+            $cache->ensureFilter($this->getFilter()->get($extension));
+            $cache->setTargetPath($path);
             $writer = $this->getWriter();
-            $writer->writeAsset($assets);
-            return $this->writeDirectory . '/' . $assets->getTargetPath();
+            $writer->writeAsset($cache);
+            return $this->writeDirectory . '/' . $path;
         }
         return false;
     }
