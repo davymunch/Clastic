@@ -11,12 +11,7 @@
 namespace Core\Plugins\Backoffice\Controller;
 
 use Clastic\Clastic;
-use Assetic\Filter\CssMinFilter;
-use Assetic\Asset\FileAsset;
-use Assetic\Asset\StringAsset;
-use Assetic\Asset\AssetReference;
-use Clastic\Event\AssetEvent;
-use Clastic\Event\ThemeEvent;
+use Core\Themes\Backoffice\Controller\BackofficeTheme;
 use Clastic\Plugin\PluginController;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -27,6 +22,15 @@ class BackofficeController extends PluginController
 {
     protected function registerDispatchers(EventDispatcher &$dispatcher)
     {
+        if ($this->getRequest()->isBackoffice()) {
+            $dispatcher->addListener(Clastic::EVENT_THEME, array($this, 'setBackofficeTheme'));
+        }
+    }
+
+    public function setBackofficeTheme($event)
+    {
+        $theme = &$event->getTheme();
+        $theme = new BackofficeTheme();
     }
 
 }
