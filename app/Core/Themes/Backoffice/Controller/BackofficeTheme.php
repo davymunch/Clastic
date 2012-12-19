@@ -11,7 +11,6 @@
 namespace Core\Themes\Backoffice\Controller;
 
 use Clastic\Clastic;
-use Assetic\Filter\CssMinFilter;
 use Assetic\Asset\FileAsset;
 use Clastic\Event\AssetEvent;
 

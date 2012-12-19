@@ -360,11 +360,6 @@ class Clastic extends HttpKernel\HttpKernel
      */
     public static function getTheme()
     {
-        static $loaded;
-        if (!$loaded) {
-            static::$theme = self::getDispatcher()->dispatch(static::EVENT_THEME, new ThemeEvent(static::$theme))->getTheme();
-            $loaded = true;
-        }
         return static::$theme;
     }
 
@@ -413,5 +408,6 @@ class Clastic extends HttpKernel\HttpKernel
     public static function prepareTheme()
     {
         static::$theme = new CleanTheme();
+        static::$theme = self::getDispatcher()->dispatch(static::EVENT_THEME, new ThemeEvent(static::$theme))->getTheme();
     }
 }
