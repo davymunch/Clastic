@@ -1,0 +1,11 @@
+{% extends "html.html.twig" %}
+
+{% block title %}Index{% endblock %}
+{% block head %}
+    {{ parent() }}
+{% endblock %}
+{% block content %}
+  {% for block in content %}
+    {{ block|raw }}
+  {% endfor %}
+{% endblock %}

@@ -11,7 +11,7 @@
 namespace Clastic;
 
 use Clastic\Module\ModuleManager;
-use Core\Themes\Backoffice\Controller\BackofficeTheme;
+use Core\Themes\Clean\Controller\CleanTheme;
 use Clastic\Bridge\TwigExtension;
 use Clastic\Asset\Assets;
 use Assetic\Factory\AssetFactory;
@@ -412,6 +412,6 @@ class Clastic extends HttpKernel\HttpKernel
 
     public static function prepareTheme()
     {
-        static::$theme = new BackofficeTheme();
+        static::$theme = new CleanTheme();
     }
 }
