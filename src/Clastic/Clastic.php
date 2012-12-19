@@ -246,6 +246,9 @@ class Clastic extends HttpKernel\HttpKernel
      */
     protected function loadDatabase()
     {
+        if (!isset(self::$config['database'])) {
+            return;
+        }
         $path = CLASTIC_ROOT . '/cache/doctrine/yaml';
         if (!is_dir($path)) {
             ModuleManager::collectDatabaseMetadata($path);
