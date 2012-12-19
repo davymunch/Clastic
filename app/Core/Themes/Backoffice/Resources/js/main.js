@@ -1,6 +1,8 @@
 /**
- * User: ddp
- * Date: 18/12/12
- * Time: 20:57
- * To change this template use File | Settings | File Templates.
+ * This file is part of the Clastic package.
+ *
+ * (c) Dries De Peuter <dries@nousefreak.be>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */

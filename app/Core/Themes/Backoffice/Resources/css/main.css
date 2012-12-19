@@ -14,12 +14,6 @@ body {
   height: 100%;
   /* Negative indent footer by it's height */
   margin: 0 auto -60px;
-
-}
-#wrap > div.inner-wrapper {
-  padding-top: 20px;
-  padding-bottom: 40px;
-
 }
 
 /* Set the fixed height of the footer here */
@@ -32,12 +26,6 @@ body {
 }
 
 /* Lastly, apply responsive CSS fixes as necessary */
-
-@media (max-width: 979px) {
-  #wrap {
-    padding-top: 0;
-  }
-}
 @media (max-width: 767px) {
   #footer {
     margin-left: -20px;
@@ -47,3 +35,16 @@ body {
   }
 }
 
+/**
+ * Main style
+ */
+
+.content-container {
+  padding-top: 60px;
+}
+@media (max-width: 979px) {
+  .content-container {
+    padding-top: 0;
+  }
+}
+}

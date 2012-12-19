@@ -1,0 +1,15 @@
+.dashboard-buttons li {
+  width: 128px;
+  height: 150px;
+}
+.dashboard-buttons a {
+  margin: auto;
+  width: 128px;
+  float: left;
+}
+.dashboard-buttons span {
+  display: block;
+  margin-top: -10px;
+  text-align: center;
+  width: 100%;
+}

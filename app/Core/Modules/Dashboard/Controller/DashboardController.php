@@ -11,6 +11,7 @@
 namespace Core\Modules\Dashboard\Controller;
 
 use Clastic\Module\ModuleController;
+use Assetic\Asset\FileAsset;
 use Symfony\Component\HttpFoundation\Response;
 
 class DashboardController extends ModuleController
@@ -25,6 +26,7 @@ class DashboardController extends ModuleController
 
     public function dashboard()
     {
+        $this->assets->css()->add(new FileAsset(__DIR__ . '/../Resources/css/dashboard.css'));
         return new Response($this->render('@Dashboard/dashboard.html.twig'));
     }
 
