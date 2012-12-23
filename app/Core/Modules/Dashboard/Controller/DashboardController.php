@@ -26,8 +26,27 @@ class DashboardController extends ModuleController
 
     public function dashboard()
     {
+        $modules = array(
+            array(
+                'label' => 'Homepage',
+                'name' => 'Homepage',
+                'path' => '/admin/homepage',
+            ),
+            array(
+                'label' => 'Security',
+                'name' => 'Security',
+                'path' => '/admin/security',
+            ),
+            array(
+                'label' => 'Text',
+                'name' => 'Text',
+                'path' => '/admin/text',
+            ),
+        );
         $this->assets->css()->add(new FileAsset(__DIR__ . '/../Resources/css/dashboard.css'));
-        return new Response($this->render('@Dashboard/dashboard.html.twig'));
+        return new Response($this->render('@Dashboard/dashboard.html.twig', array(
+            'modules' => $modules,
+        )));
     }
 
 }
