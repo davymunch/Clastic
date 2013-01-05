@@ -88,10 +88,22 @@ class ModuleManager
      *
      * @param $path string
      */
-    public static function collectDatabaseMetadata($path)
+    public static function collectDatabaseEntities($path)
     {
         if (is_dir($path) || mkdir($path, 0777, true)) {
-            // @todo collect module tables.
+            file_put_contents($path . '/.htaccess', 'deny from all');
+            $finder = new Finder();
+            $iterator = $finder->directories()
+                ->name('Entities')->in(static::getModulePaths());
+            foreach ($iterator as $dir) {
+                $fileFinder = new Finder();
+                $files = $fileFinder->files()
+                    ->in($dir->getPath())
+                    ->name('*.php');
+                foreach ($files as $entitie) {
+                    copy($entitie->getRealPath(), $path . '/' . $entitie->getFilename());
+                }
+            }
         }
     }
 
@@ -108,5 +120,38 @@ class ModuleManager
                 return is_dir($directory);
             }
         );
+    }
+
+    /**
+     * Get all directories of all modules.
+     *
+     * @return string[]
+     */
+    public static function getModuleDirectories($subDirectory = null)
+    {
+        $directories = array();
+        foreach (static::getModulePaths() as $path) {
+            $modules = new Finder();
+            $modules->directories()
+                ->in($path)
+                ->depth(0);
+            foreach ($modules as $module) {
+                if (is_null($subDirectory)) {
+                    $directories[$module->getRelativePathname()] = $module->getPathname();
+                } elseif(is_dir($module->getPathname() . '/' . $subDirectory)) {
+                    $directories[$module->getRelativePathname()] = $module->getPathname() . '/' . $subDirectory;
+                }
+            }
+        }
+        return $directories;
+    }
+
+    public static function getModuleNamespaces($subDirectory = null)
+    {
+        $entityNamespaces = array();
+        foreach (ModuleManager::getModuleDirectories($subDirectory) as $module => $directory) {
+            $entityNamespaces[$module] = str_replace(array(CLASTIC_ROOT . '/app/', '/'), array('', '\\'), $directory);
+        }
+        return $entityNamespaces;
     }
 }

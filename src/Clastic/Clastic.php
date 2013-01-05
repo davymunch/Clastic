@@ -249,10 +249,12 @@ class Clastic extends HttpKernel\HttpKernel
         if (!isset(self::$config['database'])) {
             return;
         }
-        $path = CLASTIC_ROOT . '/cache/doctrine/yaml';
-        if (!is_dir($path)) {
-            ModuleManager::collectDatabaseMetadata($path);
+        $path = CLASTIC_ROOT . '/cache/doctrine/entities';
+        if (true || !is_dir($path)) {
+            ModuleManager::collectDatabaseEntities($path);
         }
+        $config = Setup::createAnnotationMetadataConfiguration(array($path), self::$debug);
+        $config->setEntityNamespaces(ModuleManager::getModuleNamespaces('Entities'));
         self::$entityManager = EntityManager::create(
             array(
                  'driver'   => self::$config['database']['driver'],
@@ -261,7 +263,7 @@ class Clastic extends HttpKernel\HttpKernel
                  'password' => self::$config['database']['password'],
                  'dbname'   => self::$config['database']['dbname'],
             ),
-            Setup::createYAMLMetadataConfiguration(array($path), self::$debug)
+            $config
         );
     }
 
