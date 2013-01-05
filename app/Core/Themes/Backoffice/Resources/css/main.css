@@ -15,6 +15,9 @@ body {
   /* Negative indent footer by it's height */
   margin: 0 auto -60px;
 }
+.navbar-top .navbar-inner {
+  border-radius: 0;
+}
 
 /* Set the fixed height of the footer here */
 #push,
@@ -40,11 +43,10 @@ body {
  */
 
 .content-container {
-  padding-top: 60px;
+
 }
 @media (max-width: 979px) {
   .content-container {
     padding-top: 0;
   }
-}
 }
