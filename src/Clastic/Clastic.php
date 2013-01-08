@@ -267,6 +267,11 @@ class Clastic extends HttpKernel\HttpKernel
         );
     }
 
+    public static function &getEntityManager()
+    {
+        return static::$entityManager;
+    }
+
     /**
      * Instantiate the logger.
      *

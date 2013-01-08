@@ -49,6 +49,12 @@ class HomepageController extends ModuleController
 
     public function homepage()
     {
+//        $query = $this->getEntityManager()->createQueryBuilder()
+//            ->select('m')
+//            ->from('System:Module', 'm')
+//            ->getQuery();
+//        var_dump($query->getResult());
+
         $response = new Response($this->render(
             '@Homepage/homepage.html.twig',
             array('rand' => rand())

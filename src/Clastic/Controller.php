@@ -88,4 +88,9 @@ class Controller
         return $this->request;
     }
 
+    final public function &getEntityManager()
+    {
+        return Clastic::getEntityManager();
+    }
+
 }
