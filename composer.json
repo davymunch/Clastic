@@ -18,6 +18,7 @@
         "natxet/CssMin": "*",
         "symfony/config": ">=2.1,<2.3-dev",
         "symfony/event-dispatcher": ">=2.1,<2.3-dev",
+        "symfony/dependency-injection": "*",
         "symfony/finder": ">=2.1,<2.3-dev",
         "symfony/http-foundation": ">=2.1,<2.3-dev",
         "symfony/http-kernel": ">=2.1,<2.3-dev",

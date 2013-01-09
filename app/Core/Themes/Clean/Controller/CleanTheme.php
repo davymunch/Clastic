@@ -20,7 +20,7 @@ class CleanTheme
 
     public function __construct()
     {
-        Clastic::getDispatcher()->addListener(Clastic::EVENT_ASSETS_DEFAULTS, array($this, 'setAssets'));
+        Clastic::get('dispatcher')->addListener(Clastic::EVENT_ASSETS_DEFAULTS, array($this, 'setAssets'));
     }
 
     public function getName()

@@ -86,7 +86,7 @@ abstract class ModuleController extends Controller
         $contentBlock = new Block('_main_');
         $contentBlock->setContent($this->getTemplateEngine()->render($name, $context));
         $collection->addBlock($contentBlock);
-        $this->getDispatcher()->dispatch(Clastic::EVENT_PRE_RENDER, new BlockCollectionEvent($collection));
+        $this->get('dispatcher')->dispatch(Clastic::EVENT_PRE_RENDER, new BlockCollectionEvent($collection));
         return $this->getTemplateEngine()->render($baseTemplate, $collection->renderBlocks());
     }
 

@@ -59,18 +59,16 @@ class Controller
     }
 
     /**
-     * Returns a reference to the eventDispatcher.
+     * Dependency Injection api.
      *
      * @api
      *
-     * @return \Symfony\Component\EventDispatcher\EventDispatcher
+     * @param string $id
+     * @return object
      */
-    final protected function &getDispatcher()
+    final protected function get($id)
     {
-        if (is_null($this->dispatcher)) {
-            $this->dispatcher = Clastic::getDispatcher();
-        }
-        return $this->dispatcher;
+        return Clastic::get($id);
     }
 
     /**
@@ -87,10 +85,4 @@ class Controller
         }
         return $this->request;
     }
-
-    final public function &getEntityManager()
-    {
-        return Clastic::getEntityManager();
-    }
-
 }

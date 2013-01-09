@@ -11,15 +11,6 @@
 namespace Core\Modules\Homepage\Controller;
 
 use Clastic\Module\ModuleController;
-use Assetic\Asset\AssetReference;
-use CssRemoveCommentsMinifierFilter;
-use Assetic\Filter\FilterCollection;
-use Assetic\Filter\CssMinFilter;
-use Assetic\Filter\Yui\JsCompressorFilter;
-use Assetic\Filter\JSMinPlusFilter;
-use Assetic\Filter\CssImportFilter;
-use Assetic\Asset\FileAsset;
-use Assetic\Asset\StringAsset;
 use Clastic\Block\Block;
 use Clastic\Clastic;
 use Clastic\Event\BlockCollectionEvent;
@@ -34,7 +25,7 @@ class HomepageController extends ModuleController
 
     public function handle($_method)
     {
-        $this->getDispatcher()->addListener(Clastic::EVENT_PRE_RENDER, array($this, 'addBlocks'));
+        $this->get('dispatcher')->addListener(Clastic::EVENT_PRE_RENDER, array($this, 'addBlocks'));
 
         return $this->$_method();
     }

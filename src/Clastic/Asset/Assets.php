@@ -77,7 +77,7 @@ class Assets
      */
     protected function setDefaults()
     {
-        Clastic::getDispatcher()->dispatch(Clastic::EVENT_ASSETS_DEFAULTS, new AssetEvent($this))->getAssets();
+        Clastic::get('dispatcher')->dispatch(Clastic::EVENT_ASSETS_DEFAULTS, new AssetEvent($this))->getAssets();
     }
 
     /**

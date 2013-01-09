@@ -11,6 +11,9 @@
 namespace Clastic;
 
 use Clastic\Module\ModuleManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Core\Themes\Clean\Controller\CleanTheme;
 use Clastic\Bridge\TwigExtension;
 use Clastic\Asset\Assets;
@@ -77,12 +80,14 @@ class Clastic extends HttpKernel\HttpKernel
      */
     public static $debug = true;
 
+    protected $container;
+
     /**
      * Hold doctrine's entityManager.
      *
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Symfony\Component\DependencyInjection\ContainerBuilder
      */
-    protected static $entityManager;
+    protected static $dependencyInjection;
 
     /**
      * Holds the eventDispatcher.
@@ -147,33 +152,48 @@ class Clastic extends HttpKernel\HttpKernel
     /**
      * Constructor
      *
-     * @param EventDispatcherInterface    $dispatcher An EventDispatcherInterface instance
-     * @param ControllerResolverInterface $resolver   A ControllerResolverInterface instance
+     * @param Request $request
      *
      * @api
      */
     public function __construct(Request &$request)
     {
+        $this->container = new ContainerBuilder();
+
         $this->resolveSite($request);
         $this->loadConfigAndDatabase();
-        $this->loadLogger();
 
-        $context = new Routing\RequestContext();
-        $matcher = new UrlMatcher(ModuleManager::createModuleRoutes(), $context);
-        $resolver = new HttpKernel\Controller\ControllerResolver(static::$logger);
-
-        $dispatcher = new EventDispatcher();
-        $dispatcher->addSubscriber(new HttpKernel\EventListener\RouterListener($matcher, null, static::$logger));
-        $dispatcher->addSubscriber(new HttpKernel\EventListener\ResponseListener('UTF-8'));
-
-        $dispatcher->addListener(KernelEvents::EXCEPTION, array($this, 'handleError'));
+        $this->container
+          ->register('watchdog', '\Clastic\Bridge\Logger')
+          ->setArguments(array('watchdog'))
+          ->addMethodCall('pushHandler', array(new StreamHandler(CLASTIC_ROOT . '/logs/watchdog-' . static::getSiteId() . '.log')));
+        $this->container
+          ->register('routing.context', 'Symfony\Component\Routing\RequestContext');
+        $this->container
+          ->register('routing.urlMatcher', 'Symfony\Component\Routing\Matcher\UrlMatcher')
+          ->setArguments(array(ModuleManager::createModuleRoutes(), new Reference('routing.context')));
+        $this->container
+          ->register('routing.resolver', 'Symfony\Component\HttpKernel\Controller\ControllerResolver')
+          ->setArguments(array(static::$logger));
+        $this->container
+          ->register('listener.router', 'Symfony\Component\HttpKernel\EventListener\RouterListener')
+          ->setArguments(array(new Reference('routing.urlMatcher')));
+        $this->container
+          ->register('listener.response', 'Symfony\Component\HttpKernel\EventListener\ResponseListener')
+          ->setArguments(array('UTF-8'));
+        $this->container
+          ->register('dispatcher', 'Symfony\Component\EventDispatcher\EventDispatcher')
+          ->addMethodCall('addSubscriber', array(new Reference('listener.router'), null, static::$logger))
+          ->addMethodCall('addSubscriber', array(new Reference('listener.response')))
+          ->addMethodCall('addListener', array(KernelEvents::EXCEPTION, array($this, 'handleError')));
 
         $this->setBindings();
+
         self::$request = &$request;
 
-        PluginManager::triggerPlugins($dispatcher);
+        PluginManager::triggerPlugins($this->container->get('dispatcher'));
 
-        parent::__construct($dispatcher, $resolver);
+        parent::__construct($this->container->get('dispatcher'), $this->container->get('routing.resolver'));
     }
 
 
@@ -255,33 +275,26 @@ class Clastic extends HttpKernel\HttpKernel
         }
         $config = Setup::createAnnotationMetadataConfiguration(array($path), self::$debug);
         $config->setEntityNamespaces(ModuleManager::getModuleNamespaces('Entities'));
-        self::$entityManager = EntityManager::create(
+        $this->container
+          ->register('entityManager', 'Doctrine\ORM\EntityManager::create')
+          ->setArguments(array(
             array(
-                 'driver'   => self::$config['database']['driver'],
-                 'host'     => self::$config['database']['host'],
-                 'user'     => self::$config['database']['user'],
-                 'password' => self::$config['database']['password'],
-                 'dbname'   => self::$config['database']['dbname'],
+               'driver'   => self::$config['database']['driver'],
+               'host'     => self::$config['database']['host'],
+               'user'     => self::$config['database']['user'],
+               'password' => self::$config['database']['password'],
+               'dbname'   => self::$config['database']['dbname'],
             ),
             $config
-        );
-    }
-
-    public static function &getEntityManager()
-    {
-        return static::$entityManager;
+          ));
     }
 
     /**
-     * Instantiate the logger.
-     *
-     * @void
+     * @return EntityManager
      */
-    protected function loadLogger()
+    public static function &getEntityManager()
     {
-        static::$logger = new Logger('watchdog');
-        $fileHandler = new StreamHandler(CLASTIC_ROOT . '/logs/watchdog-' . static::getSiteId() . '.log');
-        static::$logger->pushHandler($fileHandler);
+        return static::$dependencyInjection->get('entityManager');
     }
 
     /**
@@ -291,17 +304,12 @@ class Clastic extends HttpKernel\HttpKernel
      */
     private function setBindings()
     {
-        self::$eventDispatcher = &$this->dispatcher;
+        self::$dependencyInjection = &$this->container;
     }
 
-    /**
-     * Gets a reference to the eventDispatcher.
-     *
-     * @return \Symfony\Component\EventDispatcher\EventDispatcher
-     */
-    public static function &getDispatcher()
+    public static function get($id, $invalidBehavior = ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)
     {
-        return self::$eventDispatcher;
+        return self::$dependencyInjection->get($id, $invalidBehavior);
     }
 
     /**
@@ -415,6 +423,6 @@ class Clastic extends HttpKernel\HttpKernel
     public static function prepareTheme()
     {
         static::$theme = new CleanTheme();
-        static::$theme = self::getDispatcher()->dispatch(static::EVENT_THEME, new ThemeEvent(static::$theme))->getTheme();
+        static::$theme = self::$dependencyInjection->get('dispatcher')->dispatch(static::EVENT_THEME, new ThemeEvent(static::$theme))->getTheme();
     }
 }
