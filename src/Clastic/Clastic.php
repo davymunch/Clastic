@@ -275,18 +275,17 @@ class Clastic extends HttpKernel\HttpKernel
         }
         $config = Setup::createAnnotationMetadataConfiguration(array($path), self::$debug);
         $config->setEntityNamespaces(ModuleManager::getModuleNamespaces('Entities'));
-        $this->container
-          ->register('entityManager', 'Doctrine\ORM\EntityManager::create')
-          ->setArguments(array(
+        $em = EntityManager::create(
             array(
-               'driver'   => self::$config['database']['driver'],
-               'host'     => self::$config['database']['host'],
-               'user'     => self::$config['database']['user'],
-               'password' => self::$config['database']['password'],
-               'dbname'   => self::$config['database']['dbname'],
+                 'driver'   => self::$config['database']['driver'],
+                 'host'     => self::$config['database']['host'],
+                 'user'     => self::$config['database']['user'],
+                 'password' => self::$config['database']['password'],
+                 'dbname'   => self::$config['database']['dbname'],
             ),
             $config
-          ));
+        );
+        $this->container->set('entityManager', $em);
     }
 
     /**
