@@ -40,7 +40,7 @@ class HomepageController extends ModuleController
 
     public function homepage()
     {
-        $query = $this->get('entityManager')->createQueryBuilder()
+        $query = $this->get('doctrine')->getEntityManager()->createQueryBuilder()
             ->select('m')
             ->from('System:Module', 'm')
             ->getQuery();

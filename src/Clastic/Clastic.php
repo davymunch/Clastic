@@ -11,11 +11,12 @@
 namespace Clastic;
 
 use Clastic\Module\ModuleManager;
+use Contrib\Providers\Twig\TwigProvider;
+use Contrib\Providers\Doctrine\DoctrineProvider;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Core\Themes\Clean\Controller\CleanTheme;
-use Clastic\Bridge\TwigExtension;
 use Clastic\Asset\Assets;
 use Assetic\Factory\AssetFactory;
 use Clastic\Event\ThemeEvent;
@@ -33,7 +34,6 @@ use Symfony\Component\Config\ConfigCache;
 use Clastic\Event\RequestEvent;
 use Clastic\Plugin\PluginManager;
 use Twig_Environment;
-use Twig_Loader_Filesystem;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel;
 use Symfony\Component\Routing;
@@ -80,6 +80,9 @@ class Clastic extends HttpKernel\HttpKernel
      */
     public static $debug = true;
 
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerBuilder
+     */
     protected $container;
 
     /**
@@ -134,13 +137,6 @@ class Clastic extends HttpKernel\HttpKernel
     protected static $siteId;
 
     /**
-     * Hold the template engine.
-     *
-     * @var \Twig_Environment
-     */
-    protected static $templateEngine;
-
-    /**
      * Active theme.
      *
      * @var string
@@ -161,7 +157,7 @@ class Clastic extends HttpKernel\HttpKernel
         $this->container = new ContainerBuilder();
 
         $this->resolveSite($request);
-        $this->loadConfigAndDatabase();
+        $this->loadConfig();
 
         $this->container
           ->register('watchdog', '\Clastic\Bridge\Logger')
@@ -186,6 +182,16 @@ class Clastic extends HttpKernel\HttpKernel
           ->addMethodCall('addSubscriber', array(new Reference('listener.router'), null, static::$logger))
           ->addMethodCall('addSubscriber', array(new Reference('listener.response')))
           ->addMethodCall('addListener', array(KernelEvents::EXCEPTION, array($this, 'handleError')));
+
+        //TODO load provider by reading the folder.
+        DoctrineProvider::register($this->container, array(
+             'driver'   => self::$config['database']['driver'],
+             'host'     => self::$config['database']['host'],
+             'user'     => self::$config['database']['user'],
+             'password' => self::$config['database']['password'],
+             'dbname'   => self::$config['database']['dbname'],
+        ));
+        TwigProvider::register($this->container);
 
         $this->setBindings();
 
@@ -241,7 +247,7 @@ class Clastic extends HttpKernel\HttpKernel
      *
      * @void
      */
-    protected function loadConfigAndDatabase()
+    protected function loadConfig()
     {
         $cachePath = CLASTIC_ROOT . '/cache/config-' . self::getSiteId() . '.php';
         $configCache = new ConfigCache($cachePath, self::$debug);
@@ -250,42 +256,11 @@ class Clastic extends HttpKernel\HttpKernel
                 self::$config,
                 Yaml::parse(CLASTIC_ROOT . '/app/Sites/' . self::$siteDirectory . '/config/config.yml')
             );
-            $this->loadDatabase();
             //@todo append the database config.
             $configCache->write(Yaml::dump(self::$config));
         } else {
             self::$config = Yaml::parse($cachePath);
-            $this->loadDatabase();
         }
-    }
-
-    /**
-     * Initialize the database.
-     *
-     * @void
-     */
-    protected function loadDatabase()
-    {
-        if (!isset(self::$config['database'])) {
-            return;
-        }
-        $path = CLASTIC_ROOT . '/cache/doctrine/entities';
-        if (true || !is_dir($path)) {
-            ModuleManager::collectDatabaseEntities($path);
-        }
-        $config = Setup::createAnnotationMetadataConfiguration(array($path), self::$debug);
-        $config->setEntityNamespaces(ModuleManager::getModuleNamespaces('Entities'));
-        $em = EntityManager::create(
-            array(
-                 'driver'   => self::$config['database']['driver'],
-                 'host'     => self::$config['database']['host'],
-                 'user'     => self::$config['database']['user'],
-                 'password' => self::$config['database']['password'],
-                 'dbname'   => self::$config['database']['dbname'],
-            ),
-            $config
-        );
-        $this->container->set('entityManager', $em);
     }
 
     /**
@@ -326,24 +301,9 @@ class Clastic extends HttpKernel\HttpKernel
      *
      * @return \Twig_Environment
      */
-    public static function &getTemplateEngine()
+    public static function getTemplateEngine()
     {
-        if (is_null(self::$templateEngine)) {
-            $paths = array_filter(
-                static::getPaths('/Themes/' . static::getTheme()->getName() . '/Resources/templates'),
-                function ($path) {
-                    return is_dir($path);
-                }
-            );
-            $loader = new Twig_Loader_Filesystem($paths);
-            self::$templateEngine = new Twig_Environment($loader, array(
-                'cache' => static::$debug ? false : CLASTIC_ROOT . '/cache/templates',
-            ), array(
-                'debug' => static::$debug,
-            ));
-            self::$templateEngine->addExtension(new TwigExtension());
-        }
-        return self::$templateEngine;
+        return self::$dependencyInjection->get('twig');
     }
 
 
