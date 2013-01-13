@@ -21,12 +21,12 @@ class DoctrineProvider implements ProviderInterface
 {
     protected $entityManager;
 
-    public static function register(ContainerInterface &$container, $params)
+    public static function register(ContainerInterface &$container)
     {
-        $container->set('doctrine', new self($params));
+        $container->set('doctrine', new self());
     }
 
-    public function __construct($params)
+    public function __construct()
     {
         $path = CLASTIC_ROOT . '/cache/doctrine/entities';
         if (true || !is_dir($path)) {
@@ -35,7 +35,13 @@ class DoctrineProvider implements ProviderInterface
         $config = Setup::createAnnotationMetadataConfiguration(array($path), Clastic::$debug);
         $config->setEntityNamespaces(ModuleManager::getModuleNamespaces('Entities'));
         $this->entityManager = EntityManager::create(
-            $params,
+            array(
+                'driver'   => Clastic::$config['database']['driver'],
+                'host'     => Clastic::$config['database']['host'],
+                'user'     => Clastic::$config['database']['user'],
+                'password' => Clastic::$config['database']['password'],
+                'dbname'   => Clastic::$config['database']['dbname'],
+            ),
             $config
         );
     }

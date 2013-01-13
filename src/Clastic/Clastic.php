@@ -71,7 +71,7 @@ class Clastic extends HttpKernel\HttpKernel
      *
      * @var array
      */
-    protected static $config = array();
+    public static $config = array();
 
     /**
      * Enable debugging.
@@ -183,15 +183,7 @@ class Clastic extends HttpKernel\HttpKernel
           ->addMethodCall('addSubscriber', array(new Reference('listener.response')))
           ->addMethodCall('addListener', array(KernelEvents::EXCEPTION, array($this, 'handleError')));
 
-        //TODO load provider by reading the folder.
-        DoctrineProvider::register($this->container, array(
-             'driver'   => self::$config['database']['driver'],
-             'host'     => self::$config['database']['host'],
-             'user'     => self::$config['database']['user'],
-             'password' => self::$config['database']['password'],
-             'dbname'   => self::$config['database']['dbname'],
-        ));
-        TwigProvider::register($this->container);
+        \Clastic\Provider\ProviderManager::registerProviders($this->container);
 
         $this->setBindings();
 
