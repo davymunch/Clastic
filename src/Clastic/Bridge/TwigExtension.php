@@ -34,11 +34,17 @@ class TwigExtension extends \Twig_Extension
 
     public function renderStylesheets($name = 'css')
     {
-        return '<link href="' . Clastic::getAssets()->getCssUri($name) . '" type="text/css" rel="stylesheet" />';
+        if ($src = Clastic::getAssets()->getCssUri($name)) {
+            return '<link href="' . $src . '" type="text/css" rel="stylesheet" />';
+        }
+        return '';
     }
 
     public function renderScripts($name = 'js')
     {
-        return '<script type="text/javascript" src="' . Clastic::getAssets()->getJsUri($name) . '"></script>';
+        if ($src = Clastic::getAssets()->getJsUri($name)) {
+            return '<script type="text/javascript" src="' . $src . '"></script>';
+        }
+        return '';
     }
 }

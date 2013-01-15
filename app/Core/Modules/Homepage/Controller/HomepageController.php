@@ -44,13 +44,14 @@ class HomepageController extends ModuleController
             ->select('m')
             ->from('System:Module', 'm')
             ->getQuery();
-        var_dump($query->getResult());
+        //var_dump($query->getResult());
 
         $response = new Response($this->render(
             '@Homepage/homepage.html.twig',
             array('rand' => rand())
         ));
         $response->setPrivate();
+        //$response->setTtl(100);
         $response->prepare($this->getRequest());
         return $response;
     }
