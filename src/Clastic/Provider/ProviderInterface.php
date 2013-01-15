@@ -10,7 +10,9 @@
 
 namespace Clastic\Provider;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 interface ProviderInterface
 {
-
+    public static function register(ContainerInterface &$container);
 }

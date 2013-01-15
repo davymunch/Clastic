@@ -14,7 +14,6 @@
         "php": ">=5.3.3",
         "doctrine/orm": "2.4.*",
         "kriswallsmith/assetic": "1.1.*",
-        "monolog/monolog": ">=1.0.0,<1.2-dev",
         "natxet/CssMin": "*",
         "symfony/config": ">=2.1,<2.3-dev",
         "symfony/event-dispatcher": ">=2.1,<2.3-dev",
@@ -24,7 +23,11 @@
         "symfony/http-kernel": ">=2.1,<2.3-dev",
         "symfony/routing": ">=2.1,<2.3-dev",
         "symfony/yaml": ">=2.1,<2.3-dev",
-        "twig/twig": ">=1.8.0,<2.0-dev"
+        "twig/twig": ">=1.8.0,<2.0-dev",
+
+        "monolog/monolog": ">=1.0.0,<1.2-dev",
+        "guzzle/guzzle": "*",
+        "notifier/notifier": "*"
     },
     "autoload": {
         "psr-0": {
