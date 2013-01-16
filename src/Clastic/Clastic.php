@@ -160,10 +160,6 @@ class Clastic extends HttpKernel\HttpKernel
         $this->loadConfig();
 
         $this->container
-          ->register('watchdog', '\Clastic\Bridge\Logger')
-          ->setArguments(array('watchdog'))
-          ->addMethodCall('pushHandler', array(new StreamHandler(CLASTIC_ROOT . '/logs/watchdog-' . static::getSiteId() . '.log')));
-        $this->container
           ->register('routing.context', 'Symfony\Component\Routing\RequestContext');
         $this->container
           ->register('routing.urlMatcher', 'Symfony\Component\Routing\Matcher\UrlMatcher')
