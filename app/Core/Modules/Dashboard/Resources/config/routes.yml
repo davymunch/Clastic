@@ -1,5 +1,0 @@
-dashboard:
-  _pattern: /admin
-  _method: dashboard
-  _firewall: true
-  _permission: dashboard.access

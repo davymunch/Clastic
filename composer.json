@@ -31,10 +31,7 @@
     },
     "autoload": {
         "psr-0": {
-          "Clastic": "src/",
-          "Core": "app/",
-          "Contrib": "app/",
-          "Sites": "app/"
+          "Clastic": "src/"
         }
     },
     "minimum-stability": "dev"
