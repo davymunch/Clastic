@@ -10,366 +10,233 @@
 
 namespace Clastic;
 
-use Clastic\Module\ModuleManager;
-use Contrib\Providers\Twig\TwigProvider;
-use Contrib\Providers\Doctrine\DoctrineProvider;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Core\Themes\Clean\Controller\CleanTheme;
-use Clastic\Asset\Assets;
-use Assetic\Factory\AssetFactory;
-use Clastic\Event\ThemeEvent;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
-use Monolog\Handler\StreamHandler;
-use \Clastic\Bridge\Logger;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Clastic\Routing\ModuleMatcher;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\Setup;
-use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Config\ConfigCache;
-use Clastic\Event\RequestEvent;
-use Clastic\Plugin\PluginManager;
-use Twig_Environment;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpKernel;
-use Symfony\Component\Routing;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Clastic\Asset\AssetManager;
-
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Component\HttpKernel\HttpKernel;
 
 /**
  * Clastic FrameworkController.
  */
-class Clastic extends HttpKernel\HttpKernel
+abstract class Clastic
 {
     /**
-     * Event name. Dispatched before the request is handled.
+     * @var string The root dir of the app.
      */
-    const EVENT_PRE_HANDLE = 'clastic.pre_handle';
+    protected $rootDir;
 
     /**
-     * Event name. Dispatched before rendering the base template.
+     * @var string The environment scope.
      */
-    const EVENT_PRE_RENDER = 'clastic.pre_render';
+    protected $environment;
 
     /**
-     * Event name. Dispatched when the assets are initialized.
+     * @var bool Indicates if the framework is in debug mode.
      */
-    const EVENT_ASSETS_DEFAULTS = 'clastic.assets.defaults';
+    protected $debug;
 
     /**
-     * Event name. Dispatched after resolving the theme.
+     * @var bool Indicates if the framework is booted.
      */
-    const EVENT_THEME = 'clastic.theme';
+    protected $booted;
 
     /**
-     * Holds the config of the current site.
-     *
-     * @var array
+     * @var BundleInterface[]
      */
-    public static $config = array();
+    protected $bundles = array();
 
     /**
-     * Enable debugging.
-     *
-     * @var bool
+     * @var BundleInterface[]
      */
-    public static $debug = true;
+    protected $bundleMap = array();
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerBuilder
+     * @var ContainerBuilder
      */
     protected $container;
 
     /**
-     * Hold doctrine's entityManager.
-     *
-     * @var \Symfony\Component\DependencyInjection\ContainerBuilder
+     * @var EventDispatcher The event dispatcher.
      */
-    protected static $dependencyInjection;
+    protected $dispatcher;
 
     /**
-     * Holds the eventDispatcher.
+     * Build the Clastic framework.
      *
-     * @var \Symfony\Component\EventDispatcher\EventDispatcher
+     * @param $env
+     * @param bool $debug
      */
-    protected static $eventDispatcher;
+    public function __construct($env, $debug = false)
+    {
+        $this->rootDir = $this->getRootDir();
+        $this->environment = $env;
+        $this->debug = $debug;
+        $this->booted = false;
+
+        $this->init();
+    }
 
     /**
-     * Holds the logger instance. This implements \Monolog\Logger
-     *
-     * @var \Clastic\Bridge\Logger
+     * Initialize additional components.
      */
-    protected static $logger;
-
-    /**
-     * Holds the pdo connection.
-     *
-     * @todo is this needed?
-     *
-     * @var \PDO
-     */
-    protected static $pdo;
-
-    /**
-     * Holds the current request.
-     *
-     * @var \Symfony\Component\HttpFoundation\Request
-     */
-    protected static $request;
-
-    /**
-     * Directory of the active site.
-     *
-     * @var string
-     */
-    protected static $siteDirectory;
-
-    /**
-     * ID of the active site.
-     *
-     * @var int
-     */
-    protected static $siteId;
-
-    /**
-     * Active theme.
-     *
-     * @var string
-     */
-    protected static $theme;
-
-    protected static $assets;
-
-    /**
-     * Constructor
-     *
-     * @param Request $request
-     *
-     * @api
-     */
-    public function __construct(Request &$request)
+    public function init()
     {
         $this->container = new ContainerBuilder();
 
-        $this->resolveSite($request);
-        $this->loadConfig();
-
-        $this->container
-          ->register('routing.context', 'Symfony\Component\Routing\RequestContext');
-        $this->container
-          ->register('routing.urlMatcher', 'Symfony\Component\Routing\Matcher\UrlMatcher')
-          ->setArguments(array(ModuleManager::createModuleRoutes(), new Reference('routing.context')));
-        $this->container
-          ->register('routing.resolver', 'Symfony\Component\HttpKernel\Controller\ControllerResolver')
-          ->setArguments(array(static::$logger));
-        $this->container
-          ->register('listener.router', 'Symfony\Component\HttpKernel\EventListener\RouterListener')
-          ->setArguments(array(new Reference('routing.urlMatcher')));
-        $this->container
-          ->register('listener.response', 'Symfony\Component\HttpKernel\EventListener\ResponseListener')
-          ->setArguments(array('UTF-8'));
-        $this->container
-          ->register('dispatcher', 'Symfony\Component\EventDispatcher\EventDispatcher')
-          ->addMethodCall('addSubscriber', array(new Reference('listener.router'), null, static::$logger))
-          ->addMethodCall('addSubscriber', array(new Reference('listener.response')))
-          ->addMethodCall('addListener', array(KernelEvents::EXCEPTION, array($this, 'handleError')));
-
-        \Clastic\Provider\ProviderManager::registerProviders($this->container);
-
-        $this->setBindings();
-
-        self::$request = &$request;
-
-        PluginManager::triggerPlugins($this->container->get('dispatcher'));
-
-        parent::__construct($this->container->get('dispatcher'), $this->container->get('routing.resolver'));
+        $this->buildDispatcher();
+        $this->buildControllerResolver();
+        $this->buildHttpKernel();
     }
 
-
     /**
-     * Handles a Request to convert it to a Response.
-     *
-     * When $catch is true, the implementation must catch all exceptions
-     * and do its best to convert them to a Response instance.
-     *
-     * @param Request $request A Request instance
-     * @param integer $type    The type of the request
-     *                          (one of HttpKernelInterface::MASTER_REQUEST or HttpKernelInterface::SUB_REQUEST)
-     * @param Boolean $catch   Whether to catch exceptions or not
-     *
-     * @return Response A Response instance
-     *
-     * @throws \Exception When an Exception occurs during processing
-     *
-     * @api
+     * Get the root dir of the app.
      */
-    public function handle(\Symfony\Component\HttpFoundation\Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
+    public function getRootDir()
     {
-        $this->prepareTheme();
-        $event = new RequestEvent($request);
-        $request = $this->dispatcher->dispatch(Clastic::EVENT_PRE_HANDLE, $event)->getRequest();
-        return parent::handle($request, $type, $catch);
+        if (null === $this->rootDir) {
+            $r = new \ReflectionClass($this);
+
+            $this->rootDir = str_replace('\\', '/', dirname($r->getFileName()));
+        }
+
+        return $this->rootDir;
     }
 
     /**
-     * Resolve what site we are on.
+     * Build the event dispatcher.
+     */
+    protected function buildDispatcher()
+    {
+        $this->container
+            ->register('dispatcher', 'Symfony\Component\EventDispatcher\EventDispatcher');
+    }
+
+    /**
+     * Build the controller resolver.
+     */
+    protected function buildControllerResolver()
+    {
+        $this->container
+            ->register('controller_resolver', 'Symfony\Component\HttpKernel\Controller\ControllerResolver');
+    }
+
+    /**
+     * Build the kernel.
+     */
+    protected function buildHttpKernel()
+    {
+        $this->container
+            ->register('http_kernel', 'Symfony\Component\HttpKernel\HttpKernel')
+            ->setArguments(array(
+                $this->container->get('dispatcher'),
+                $this->container->get('controller_resolver'),
+            ));
+    }
+
+    /**
+     * Initialize all bundles.
+     *
+     * @throws \LogicException
+     */
+    protected function initializeBundles()
+    {
+        // init bundles
+        $this->bundles = array();
+        $topMostBundles = array();
+        $directChildren = array();
+
+        foreach ($this->registerBundles() as $bundle) {
+            $name = $bundle->getName();
+            if (isset($this->bundles[$name])) {
+                throw new \LogicException(sprintf('Trying to register two bundles with the same name "%s"', $name));
+            }
+            $this->bundles[$name] = $bundle;
+
+            if ($parentName = $bundle->getParent()) {
+                if (isset($directChildren[$parentName])) {
+                    throw new \LogicException(sprintf('Bundle "%s" is directly extended by two bundles "%s" and "%s".', $parentName, $name, $directChildren[$parentName]));
+                }
+                if ($parentName == $name) {
+                    throw new \LogicException(sprintf('Bundle "%s" can not extend itself.', $name));
+                }
+                $directChildren[$parentName] = $name;
+            } else {
+                $topMostBundles[$name] = $bundle;
+            }
+        }
+
+        // look for orphans
+        if (count($diff = array_values(array_diff(array_keys($directChildren), array_keys($this->bundles))))) {
+            throw new \LogicException(sprintf('Bundle "%s" extends bundle "%s", which is not registered.', $directChildren[$diff[0]], $diff[0]));
+        }
+
+        // inheritance
+        $this->bundleMap = array();
+        foreach ($topMostBundles as $name => $bundle) {
+            $bundleMap = array($bundle);
+            $hierarchy = array($name);
+
+            while (isset($directChildren[$name])) {
+                $name = $directChildren[$name];
+                array_unshift($bundleMap, $this->bundles[$name]);
+                $hierarchy[] = $name;
+            }
+
+            foreach ($hierarchy as $bundle) {
+                $this->bundleMap[$bundle] = $bundleMap;
+                array_pop($bundleMap);
+            }
+        }
+    }
+
+    /**
+     * @return BundleInterface[]
+     */
+    abstract function registerBundles();
+
+    /**
+     * Handle the requests.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return mixed
      */
-    protected function resolveSite(Request $request)
+    public function handle(Request $request)
     {
-        // @todo make this dynamic
-        static::$siteId = 1;
-        static::$siteDirectory = 'demo';
-    }
-
-    /**
-     * Load the config from file if a cache exists.
-     * If no cache exists, the call will first be loaded from files and append this
-     * with the databases config.
-     *
-     * @void
-     */
-    protected function loadConfig()
-    {
-        $cachePath = CLASTIC_ROOT . '/cache/config-' . self::getSiteId() . '.php';
-        $configCache = new ConfigCache($cachePath, self::$debug);
-        if (!$configCache->isFresh()) {
-            self::$config = array_merge(
-                self::$config,
-                Yaml::parse(CLASTIC_ROOT . '/app/Sites/' . self::$siteDirectory . '/config/config.yml')
-            );
-            //@todo append the database config.
-            $configCache->write(Yaml::dump(self::$config));
-        } else {
-            self::$config = Yaml::parse($cachePath);
+        if (false === $this->booted) {
+            $this->boot();
         }
+
+        $kernel = $this->container->get('http_kernel');
+
+        return $kernel->handle($request);
     }
 
     /**
-     * @return EntityManager
+     * Boot the framework and all bundles.
      */
-    public static function &getEntityManager()
+    protected function boot()
     {
-        return static::$dependencyInjection->get('entityManager');
-    }
-
-    /**
-     * Link all bindings to the these can be exposed.
-     *
-     * @void
-     */
-    private function setBindings()
-    {
-        self::$dependencyInjection = &$this->container;
-    }
-
-    public static function get($id, $invalidBehavior = ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)
-    {
-        return self::$dependencyInjection->get($id, $invalidBehavior);
-    }
-
-    /**
-     * Gets a reference to the request.
-     *
-     * @return \Symfony\Component\HttpFoundation\Request
-     */
-    public static function &getRequest()
-    {
-        return self::$request;
-    }
-
-    /**
-     * Gets a reference to the template engine.
-     *
-     * @return \Twig_Environment
-     */
-    public static function getTemplateEngine()
-    {
-        return self::$dependencyInjection->get('twig');
-    }
-
-
-    /**
-     * Getter for the site's ID.
-     *
-     * @return int
-     */
-    public static function getSiteId()
-    {
-        return static::$siteId;
-    }
-
-    /**
-     * Getter for the site's directory.
-     *
-     * @return string
-     */
-    public static function getSiteDirectory()
-    {
-        return static::$siteDirectory;
-    }
-
-    /**
-     * Getter for the site's theme.
-     *
-     * @return todo
-     */
-    public static function getTheme()
-    {
-        return static::$theme;
-    }
-
-	  /**
-     * Handles the request if something went wrong.
-     *
-     * @param \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent $event
-     */
-    public function handleError(GetResponseForExceptionEvent $event)
-    {
-      switch (get_class($event->getException())) {
-        case 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException':
-          return $event->setResponse(new Response($event->getException()->getMessage(), $event->getException()->getStatusCode()));
-      }
-      var_dump($event->getException());
-    }
-
-    /**
-     * Get a list of all the paths, they will be appended with a $suffix.
-     *
-     * @param string $suffix
-     * @return string[]
-     */
-    public static function getPaths($suffix = '')
-    {
-        return array(
-             CLASTIC_ROOT . '/app/Core' . $suffix,
-             CLASTIC_ROOT . '/app/Contrib' . $suffix,
-             CLASTIC_ROOT . '/app/Sites/' . Clastic::getSiteDirectory() . $suffix,
-        );
-    }
-
-    /**
-     * Getter for the Assetic bridge package.
-     *
-     * @return Assets
-     */
-    public static function &getAssets()
-    {
-        if (is_null(static::$assets)) {
-            static::$assets = new Assets();
+        if (true === $this->booted) {
+            return;
         }
-        return static::$assets;
+
+        $this->initializeBundles();
+
+        foreach ($this->getBundles() as $bundle) {
+            $bundle->setContainer($this->container);
+            $bundle->boot();
+        }
+
+        $this->booted = true;
     }
 
-    public static function prepareTheme()
+    /**
+     * @return BundleInterface[]
+     */
+    protected function getBundles()
     {
-        static::$theme = new CleanTheme();
-        static::$theme = self::$dependencyInjection->get('dispatcher')->dispatch(static::EVENT_THEME, new ThemeEvent(static::$theme))->getTheme();
+        return $this->bundles;
     }
 }
