@@ -14,8 +14,12 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernel;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Clastic FrameworkController.
@@ -194,7 +198,7 @@ abstract class Clastic
     /**
      * @return BundleInterface[]
      */
-    abstract function registerBundles();
+    abstract public function registerBundles();
 
     /**
      * Handle the requests.
@@ -238,5 +242,21 @@ abstract class Clastic
     protected function getBundles()
     {
         return $this->bundles;
+    }
+
+    /**
+     * Terminates a request/response cycle.
+     *
+     * Should be called after sending the response and before shutting down the kernel.
+     *
+     * @param Request  $request  A Request instance
+     * @param Response $response A Response instance
+     *
+     * @api
+     */
+    public function terminate(Request $request, Response $response)
+    {
+        $this->container->get('dispatcher')
+            ->dispatch(KernelEvents::TERMINATE, new PostResponseEvent($this->container->get('http_kernel'), $request, $response));
     }
 }
